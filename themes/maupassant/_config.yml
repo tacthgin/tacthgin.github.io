@@ -6,7 +6,7 @@ baidu_search: ## Use Baidu search, true/false.
 swiftype: ## Your swiftype_key, e.g. m7b11ZrsT8Me7gzApciT
 tinysou: ## Your tinysou_key, e.g. 4ac092ad8d749fdc6293
 self_search: ## Use a jQuery-based local search engine, true/false.
-google_analytics: ## Your Google Analytics tracking id, e.g. UA-42425684-2
+google_analytics: UA-85639396-1## Your Google Analytics tracking id, e.g. UA-42425684-2
 baidu_analytics: ## Your Baidu Analytics tracking id, e.g. 8006843039519956000
 show_category_count: false ## If you want to show the count of categories in the sidebar widget please set the value to true.
 shareto: true ## If you want to use the share button please set the value to true.
@@ -38,6 +38,8 @@ widgets: ## Six widgets in sidebar provided: search, category, tag, recent_posts
 links:
   - title: 魔兽世界个人英雄榜
     url: http://www.battlenet.com.cn/wow/zh/character/silver-hand/%E4%B8%80%E5%8F%AA%E5%A4%A7%E8%90%8C%E7%8C%AB/simple
+  - title: Neo's blog
+    url: http://canbefree.github.io/
 
 timeline:
   - num: 1
