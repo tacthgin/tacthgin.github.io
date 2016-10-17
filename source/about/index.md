@@ -1,8 +1,8 @@
 ---
-title: about
+title: 关于
 date: 2016-10-14 15:46:12
 tag:
     - about
 ---
 
-hello,my first blog!
+创建这个博客的目的，就是为了分享一些有趣的东西，为了提升自己的程序能力
