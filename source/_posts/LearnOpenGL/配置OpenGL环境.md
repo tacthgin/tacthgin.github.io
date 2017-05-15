@@ -18,7 +18,7 @@ GLFW可以从它官方网站的[下载页](http://www.glfw.org/download.html)上
 1.找到IDE或者编译器的/lib和/include文件夹，添加GLFW的include文件夹里的文件到IDE的/include文件夹里去。用类似的方法，将glfw3.lib添加到/lib文件夹里去。
 2.推荐的方式是建立一个新的目录包含所有的第三方库文件和头文件，并且在你的IDE或编译器中指定这些文件夹。
 在Virtual Studio中配置:
-1.我们首先进入Project Properties(工程属性，在解决方案窗口里右键项目)，然后选择VC++ Directories(VC++ 目录)选项卡（如下图）。在下面的两栏添加目录：
+1.我们首先进入Project Properties(工程属性，在解决方案窗口里右键项目)，然后选择VC++ Directories(VC++ 目录)选项卡（如下图）。在下面的两栏添加目录：($(SolutionDir):vs工程目录路径)
 ![](1.png)
 2.在Linker(链接器)选项卡里的Input(输入)选项卡里添加glfw3.lib这个文件：
 ![](2.png)
