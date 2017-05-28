@@ -52,7 +52,7 @@ GLfloat vertices[] = {
      0.0f,  0.5f, 0.0f
 };
 ```
-# 顶点缓冲对象(Vertex Buffer Objects, VBO)
+### 顶点缓冲对象(Vertex Buffer Objects, VBO)
 1.使用VBO来管理顶点数据内存，它会在GPU中储存大量顶点数据
 2.使用VBO可以一次性发送大量数据到显卡，而不是每个顶点发一次
 >**Tip**
@@ -166,7 +166,9 @@ if(!success) {
 ```
 
 6.使用着色器程序对象
+```C++
 glUseProgram(shaderProgram);
+```
 
 7.释放着色器对象
 ```C++
@@ -210,7 +212,7 @@ glUseProgram(shaderProgram);
 someOpenGLFunctionThatDrawsOurTriangle();
 ```
 
-# 顶点数组对象(Vertex Array Object, VAO)
+### 顶点数组对象(Vertex Array Object, VAO)
 1.保存顶点属性的调用
 2.使用不同的顶点数据和属性配置，只要绑定不同的VAO
 >**Attemtion**
@@ -251,7 +253,7 @@ glBindVertexArray(0);
 >**Think**
 **用到的时候再绑定，避免出现误导**
 
-# 画出第一个三角形
+### 画出第一个三角形
 ```C++
 glUseProgram(shaderProgram);
 glBindVertexArray(VAO);
@@ -343,3 +345,5 @@ glBindVertexArray(0);
 **要想用线框模式绘制你的三角形，你可以通过glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)函数配置OpenGL如何绘制图元。第一个参数表示我们打算将其应用到所有的三角形的正面和背面，第二个参数告诉我们用线来绘制。之后的绘制调用会一直以线框模式绘制三角形，直到我们用glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)将其设置回默认模式**
 
 [源代码](https://github.com/tacthgin/toy/tree/master/OpenGL)在这
+>**注:**
+**源文章出处[LearnOpenGL](http://learnopengl-cn.readthedocs.io/zh/latest/01%20Getting%20started/04%20Hello%20Triangle/)**
