@@ -3,7 +3,6 @@ title: 你好，三角形
 date: 2016-10-19 16:30:37
 tags: 
     OpenGL
-    Visual Studio
 category: LearnOpenGL
 ---
 

@@ -3,7 +3,6 @@ title: 你好，窗口
 date: 2016-10-19 16:00:15
 tags: 
     OpenGL
-    Visual Studio
 category: LearnOpenGL
 ---
 
