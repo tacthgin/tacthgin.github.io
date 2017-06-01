@@ -3,7 +3,11 @@
   "version": "0.0.0",
   "private": true,
   "hexo": {
+<<<<<<< HEAD
     "version": "3.3.7"
+=======
+    "version": "3.2.2"
+>>>>>>> 5637b26e4e329949dd19b0511fbf440c11aec824
   },
   "dependencies": {
     "hexo": "^3.2.0",
