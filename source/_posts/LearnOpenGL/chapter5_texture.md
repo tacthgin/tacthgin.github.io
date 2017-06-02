@@ -203,7 +203,7 @@ glActiveTexture(GL_TEXTURE0); //在绑定纹理之前先激活纹理单元
 glBindTexture(GL_TEXTURE_2D, texture);
 ```
 
->**Important**
+**Important**
 **OpenGL至少保证有16个纹理单元供你使用，也就是说你可以激活从GL_TEXTURE0到GL_TEXTRUE15。它们都是按顺序定义的，所以我们也可以通过GL_TEXTURE0 + 8的方式获得GL_TEXTURE8，这在当我们需要循环一些纹理单元的时候会很有用。**
 
 4.在片段着色器中添加采样器
@@ -236,11 +236,11 @@ glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 glBindVertexArray(0);
 ```
 
->**Tip**
+**Tip**
 **SOIL_load_image加载图形的时候是颠倒的,所以在顶点着色器中修改纹理坐标TexCoord = vec2(texCoord.x, 1 - texCoord.y);,最好的方式是换个加载图像的库。**
 
 ![](texture_mix_texture.png)
 
 [源代码](https://github.com/tacthgin/toy/tree/master/OpenGL)在这
->**注:**
+
 **源文章出处[LearnOpenGL](http://learnopengl-cn.readthedocs.io/zh/latest/01%20Getting%20started/06%20Textures/)**

@@ -64,7 +64,7 @@ category: LearnOpenGL
 矩阵乘法:
 ![](matrix_multiplication.png)
 
-m*n矩阵乘以n*p矩阵,得出m*p矩阵
+m×n矩阵乘以n×p矩阵,得出m×p矩阵
 ![](matrix_multipy_vector.png)
 
 ### 缩放矩阵
@@ -73,7 +73,7 @@ m*n矩阵乘以n*p矩阵,得出m*p矩阵
 ### 位移矩阵
 ![](matrix_pos.png)
 
->**Important**
+**Important**
 **齐次坐标(Homogeneous Coordinates)**
 **向量的w分量也叫齐次坐标。想要从齐次向量得到3D向量，我们可以把x、y和z坐标分别除以w坐标。我们通常不会注意这个问题，因为w分量通常是1.0。使用齐次坐标有几点好处：它允许我们在3D向量上进行位移（如果没有w分量我们是不能位移向量的），而且下一章我们会用w值创建3D视觉效果。如果一个向量的齐次坐标是0，这个坐标就是方向向量(Direction Vector，因为w坐标是0，这个向量就不能位移（译注：这也就是我们说的不能位移一个方向）。**
 

@@ -12,7 +12,7 @@ category: LearnOpenGL
 * 把3D坐标转换为2D坐标。
 * 把2D坐标转换为有颜色的像素。
 
->**Important**
+**Important**
 **2D坐标和像素也是不同的，2D坐标精确表示一个点在2D空间中的位置，而2D像素是这个点的近似值，2D像素受到你的屏幕/窗口分辨率的限制。**
 
 图形渲染管线可以被划分为几个阶段，每个阶段将会把前一个阶段的输出作为输入。所有这些阶段都是高度专门化的（它们都有一个特定的函数），并且很容易并行执行。
@@ -20,7 +20,7 @@ category: LearnOpenGL
 ![](1.png)
 *   首先，我们以数组的形式传递3个3D坐标作为图形渲染管线的输入，用来表示一个三角形，这个数组叫做顶点数据(Vertex Data)；顶点数据是一系列顶点的集合。一个顶点(Vertex)是一个3D坐标的数据的集合。而顶点数据是用顶点属性(Vertex Attribute)表示的，它可以包含任何我们想用的数据，但是简单起见，我们还是假定每个顶点只由一个3D位置(译注1)和一些颜色值组成的吧。
 
->**译注1**
+**译注1**
 **当我们谈论一个“位置”的时候，它代表在一个“空间”中所处地点的这个特殊属性；同时“空间”代表着任何一种坐标系，比如x、y、z三维坐标系，x、y二维坐标系，或者一条直线上的x和y的线性关系，只不过二维坐标系是一个扁扁的平面空间，而一条直线是一个很瘦的长长的空间。**
 
 *   图形渲染管线的第一个部分是顶点着色器(Vertex Shader)，它把一个单独的顶点作为输入。顶点着色器主要的目的是把3D坐标转为另一种3D坐标（后面会解释），同时顶点着色器允许我们对顶点属性进行一些基本处理。
@@ -37,10 +37,10 @@ category: LearnOpenGL
 
 ## 顶点输入
 1.输入顶点数据时，OpenGL只处理标准化设备坐标(Normalized Device Coordinates)
->**Important**
+**Important**
 **一旦你的顶点坐标已经在顶点着色器中处理过，它们就应该是标准化设备坐标了，标准化设备坐标是一个x、y和z值在-1.0到1.0的一小段空间。任何落在范围外的坐标都会被丢弃/裁剪，不会显示在你的屏幕上。**
 ![](2.png)
->**你的标准化设备坐标接着会变换为屏幕空间坐标(Screen-space Coordinates)，这是使用你通过glViewport函数提供的数据，进行视口变换(Viewport Transform)完成的。所得的屏幕空间坐标又会被变换为片段输入到片段着色器中。**
+**你的标准化设备坐标接着会变换为屏幕空间坐标(Screen-space Coordinates)，这是使用你通过glViewport函数提供的数据，进行视口变换(Viewport Transform)完成的。所得的屏幕空间坐标又会被变换为片段输入到片段着色器中。**
 
 2.顶点数据会作为输入发送给顶点着色器，它会在GPU上创建内存存储顶点数据，并操作。
 创建三角形的顶点数据：
@@ -54,7 +54,7 @@ GLfloat vertices[] = {
 ### 顶点缓冲对象(Vertex Buffer Objects, VBO)
 1.使用VBO来管理顶点数据内存，它会在GPU中储存大量顶点数据
 2.使用VBO可以一次性发送大量数据到显卡，而不是每个顶点发一次
->**Tip**
+**Tip**
 **从CPU把数据发送到显卡相对较慢，把大量顶点发送到GPU内存后，顶点着色器几乎能立即访问顶点，这是个非常快的过程。**
 
 3.生成VBO
@@ -91,9 +91,9 @@ void main()
     gl_Position = vec4(position.x, position.y, position.z, 1.0);
 }
 ```
-2.```in```代表输入顶点属性(Input Vertex Attribute)
-3.```layout (location = 0)```设定了输入变量的位置值(Location)
-4.```vec3```输入变量position
+2.in代表输入顶点属性(Input Vertex Attribute)
+3.layout (location = 0)设定了输入变量的位置值(Location)
+4.vec3输入变量position
 
 ## 编译着色器
 1.创建着色器
@@ -194,7 +194,7 @@ glEnableVertexAttribArray(0);
 * 第五个参数是步长(Stride)
 * 第六个参数指定缓冲的起始偏移量
 
->**Important**
+**Important**
 **每个顶点属性从VBO获取数据，决定从哪个VBO读取根据绑定到GL_ARRAY_BUFFER的VBO**
 
 3.在OpenGL绘制一个物体:
@@ -214,7 +214,7 @@ someOpenGLFunctionThatDrawsOurTriangle();
 ### 顶点数组对象(Vertex Array Object, VAO)
 1.保存顶点属性的调用
 2.使用不同的顶点数据和属性配置，只要绑定不同的VAO
->**Attemtion**
+**Attemtion**
 **OpenGL的核心模式要求我们使用VAO，所以它知道该如何处理我们的顶点输入。如果我们绑定VAO失败，OpenGL会拒绝绘制任何东西。**
 ![](vertex_attribute_pointer.png)
 
@@ -247,9 +247,9 @@ glBindVertexArray(VAO);
 someOpenGLFunctionThatDrawsOurTriangle();
 glBindVertexArray(0);
 ```
->**Attemtion**
+**Attemtion**
 **通常情况下当我们配置好OpenGL对象以后要解绑它们，这样我们才不会在其它地方错误地配置它们。**
->**Think**
+**Think**
 **用到的时候再绑定，避免出现误导**
 
 ### 画出第一个三角形
@@ -305,9 +305,9 @@ glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 ```
 ![](vertex_array_objects_ebo.png)
->**Attemtion**
+**Attemtion**
 **当目标是GL_ELEMENT_ARRAY_BUFFER的时候，VAO会储存glBindBuffer的函数调用。这也意味着它也会储存解绑调用，所以确保你没有在解绑VAO之前解绑索引数组缓冲，否则它就没有这个IBO配置了。**
->**Think**
+**Think**
 **索引缓冲对象时候，不需要自己解绑**
 
 5.使用IBO画图
@@ -339,10 +339,10 @@ glBindVertexArray(0);
 
 ![](index_draw.png)
 
->**Important**
+**Important**
 **线框模式((Wireframe Mode)**
 **要想用线框模式绘制你的三角形，你可以通过glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)函数配置OpenGL如何绘制图元。第一个参数表示我们打算将其应用到所有的三角形的正面和背面，第二个参数告诉我们用线来绘制。之后的绘制调用会一直以线框模式绘制三角形，直到我们用glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)将其设置回默认模式**
 
 [源代码](https://github.com/tacthgin/toy/tree/master/OpenGL)在这
->**注:**
+
 **源文章出处[LearnOpenGL](http://learnopengl-cn.readthedocs.io/zh/latest/01%20Getting%20started/04%20Hello%20Triangle/)**

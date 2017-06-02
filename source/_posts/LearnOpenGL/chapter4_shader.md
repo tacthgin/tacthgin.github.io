@@ -72,7 +72,7 @@ void main()
 }  
 ```
 
->**Attention**
+**Attention**
 **如果你声明了一个uniform却在GLSL代码中没用过，编译器会静默移除这个变量，导致最后编译出的版本中并不会包含它，这可能导致几个非常麻烦的错误，记住这点！**
 
 5.使用uniform,动态改变三角形颜色
@@ -271,5 +271,5 @@ Shader::Shader(const GLchar * vertexPath, const GLchar * fragmentPath)
 ```
 
 [源代码](https://github.com/tacthgin/toy/blob/master/OpenGL/src/Shader.cpp)在这
->**注:**
+
 **源文章出处[LearnOpenGL](http://learnopengl-cn.readthedocs.io/zh/latest/01%20Getting%20started/05%20Shaders/)**

@@ -50,5 +50,4 @@ glGenBuffers(1, &buffer);
 
 我们现在成功编译了GLFW和GLEW库，我们已经准备好将进入下一节去真正使用GLFW和GLEW来设置OpenGL上下文并创建窗口。记得确保你的头文件和库文件的目录设置正确，以及链接器里引用的库文件名正确。
 
->**注:**
 **源文章出处[LearnOpenGL](http://learnopengl-cn.readthedocs.io/zh/latest/01%20Getting%20started/02%20Creating%20a%20window/)**

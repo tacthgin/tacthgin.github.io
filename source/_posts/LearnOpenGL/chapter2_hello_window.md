@@ -65,5 +65,4 @@ category: LearnOpenGL
 	}
 ```
 
->**注:**
 **源文章出处[LearnOpenGL](http://learnopengl-cn.readthedocs.io/zh/latest/01%20Getting%20started/03%20Hello%20Window/)**
