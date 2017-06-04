@@ -189,7 +189,7 @@ private:
 #endif // !_SHADER_H_
 ```
 
-##从文件读取
+## 从文件读取
 ```C++
 Shader::Shader(const GLchar * vertexPath, const GLchar * fragmentPath)
 :_program(0)

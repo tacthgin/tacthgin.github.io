@@ -93,8 +93,50 @@ m×n矩阵乘以n×p矩阵,得出m×p矩阵
 5.绕x,y,z轴旋转会造成万向节死锁(Gimbal Lock),选择用任意轴旋转(Rx, Ry, Rz)
 ![](matrix_rotation_anything.png)
 
-## GLM
+## GLM(OpenGL Mathematics)
+1.GLM是一个只有头文件的库,从这个[网站](http://glm.g-truc.net/0.9.5/index.html)下载
+2.把glm文件夹放在工程include目录下,添加头文件
+```C++
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+```
 
+3.在顶点着色器添加变换矩阵
+```C++
+#version 330 core
+layout (location = 0) in vec3 position;
+layout (location = 1) in vec3 color;
+layout (location = 2) in vec2 texCoord;
+
+out vec3 ourColor;
+out vec2 TexCoord;
+
+uniform mat4 transform;
+
+void main()
+{
+	gl_Position = transform * vec4(position, 1.0);
+	ourColor = color;
+	TexCoord = vec2(texCoord.x, 1 - texCoord.y);
+}
+```
+
+4.在画图中，使用sin变化scale大小，随时间来rotate
+```C++
+glm::mat4 trans;
+GLfloat scale = abs(sinf((GLfloat)glfwGetTime()));
+trans = glm::scale(trans, glm::vec3(scale, scale, 0.0f));
+trans = glm::rotate(trans, (GLfloat)glfwGetTime() * 50.0f, glm::vec3(0.0f, 0.0f, 1.0f));
+
+GLuint transformLoc = glGetUniformLocation(shader.getProgram(), "transform");
+glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
+```
+![](transform.png)
+
+[源代码](https://github.com/tacthgin/toy/tree/master/OpenGL)在这
+
+**源文章出处[LearnOpenGL](http://learnopengl-cn.readthedocs.io/zh/latest/01%20Getting%20started/07%20Transformations/)**
 
 
 
