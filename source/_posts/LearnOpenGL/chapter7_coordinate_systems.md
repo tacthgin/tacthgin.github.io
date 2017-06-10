@@ -191,7 +191,9 @@ for (GLuint i = 0; i < 10; i++)
 }
 ```
 
-![](more_cube.png)
+<video controls="" width="480" height="320">
+	<source src="cube_vedio.mp4" type="video/mp4"/>
+</video>
 
 
 [源代码](https://github.com/tacthgin/toy/tree/master/OpenGL)在这
