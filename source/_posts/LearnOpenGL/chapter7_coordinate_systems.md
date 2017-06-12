@@ -191,8 +191,8 @@ for (GLuint i = 0; i < 10; i++)
 }
 ```
 
-<video controls="" width="480" height="320">
-	<source src="cube_vedio.mp4" type="video/mp4"/>
+<video id="video" controls="" preload="none" width="480" height="320">
+      <source id="mp4" src="cube_video.mp4" type="video/mp4"/>
 </video>
 
 
