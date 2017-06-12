@@ -50,6 +50,20 @@ view = glm::lookAt(glm::vec3(0.0f, 0.0f, 3.0f),
 glm::vec3(0.0f, 0.0f, 0.0f), 
 glm::vec3(0.0f, 1.0f, 0.0f));
 ```
+<video id="video" src="rotate_camera.mp4" controls="" preload="none" width="480" height="320" />
+
+## 自由移动
+1.自定义相机的向量
+```C++
+glm::vec3 cameraPos   = glm::vec3(0.0f, 0.0f,  3.0f);
+glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+glm::vec3 cameraUp    = glm::vec3(0.0f, 1.0f,  0.0f);
+```
+2.得出LookAt函数
+```C++
+view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+```
+
 
 
 
