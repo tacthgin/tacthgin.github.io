@@ -50,7 +50,8 @@ view = glm::lookAt(glm::vec3(0.0f, 0.0f, 3.0f),
 glm::vec3(0.0f, 0.0f, 0.0f), 
 glm::vec3(0.0f, 1.0f, 0.0f));
 ```
-<video id="video" src="rotate_camera.mp4" controls="" preload="none" width="480" height="320" />
+<video id="video" src="rotate_camera.mp4" controls="" preload="none" width="480" height="320" >
+</video>
 
 ## 自由移动
 1.自定义相机的向量
@@ -64,7 +65,89 @@ glm::vec3 cameraUp    = glm::vec3(0.0f, 1.0f,  0.0f);
 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 ```
 
+3.添加摄像机移动按键事件
+```C++
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode)
+{
+    ...
+    GLfloat cameraSpeed = 0.05f;
+    if(key == GLFW_KEY_W)
+        cameraPos += cameraSpeed * cameraFront;
+    if(key == GLFW_KEY_S)
+        cameraPos -= cameraSpeed * cameraFront;
+    if(key == GLFW_KEY_A)
+        cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+    if(key == GLFW_KEY_D)
+        cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;  
+}
+```
+**Important**
+**对右向量进行标准化，获得匀速效果**
 
+4.处理按键按下/释放
+```C++
+bool keys[1024];
+
+[...]
+
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode)
+{
+  if(action == GLFW_PRESS)
+    keys[key] = true;
+  else if(action == GLFW_RELEASE)
+    keys[key] = false;
+  ...
+}
+
+void do_movement()
+{
+  // 摄像机控制
+  GLfloat cameraSpeed = 0.01f;
+  if(keys[GLFW_KEY_W])
+    cameraPos += cameraSpeed * cameraFront;
+  if(keys[GLFW_KEY_S])
+    cameraPos -= cameraSpeed * cameraFront;
+  if(keys[GLFW_KEY_A])
+    cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+  if(keys[GLFW_KEY_D])
+    cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+}
+
+[...]
+
+while(!glfwWindowShouldClose(window))
+{
+  // 检测并调用事件
+  glfwPollEvents();
+  do_movement();  
+
+  // 渲染
+  ...
+}
+```
+
+## 移动速度
+利用循环间得帧率差，来计算速度，获取移动流畅效果
+```C++
+GLfloat deltaTime = 0.0f;   // 当前帧遇上一帧的时间差
+GLfloat lastFrame = 0.0f;   // 上一帧的时间
+
+[...]
+
+GLfloat currentFrame = glfwGetTime();
+deltaTime = currentFrame - lastFrame;
+lastFrame = currentFrame;  
+
+[...]
+
+void do_movement()
+{
+  GLfloat cameraSpeed = 5.0f * deltaTime;
+  ...
+}
+```
+
+## 视角移动
 
 
 
