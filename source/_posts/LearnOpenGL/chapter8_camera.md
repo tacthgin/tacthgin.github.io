@@ -50,7 +50,7 @@ view = glm::lookAt(glm::vec3(0.0f, 0.0f, 3.0f),
 glm::vec3(0.0f, 0.0f, 0.0f), 
 glm::vec3(0.0f, 1.0f, 0.0f));
 ```
-<video id="video" src="rotate_camera.mp4" controls="" preload="none" width="480" height="320" >
+<video id="video" src="rotate_camera.mp4" controls="" preload="none" width="480" height="320">
 </video>
 
 ## 自由移动
@@ -148,6 +148,24 @@ void do_movement()
 ```
 
 ## 视角移动
+使用鼠标来旋转视角
+### 欧拉角(Euler Angle)
+![](camera_pitch_yaw_roll.png)
+1.**俯仰角**是往上和往下看得角(图1)，**偏航角**是往左和往右看的角(图2)，**滚转角**代表我们如何翻转摄像机
+2.对摄像机系统不关心滚转角，基本得旋转三角公式图如下
+![](camera_triangle.png)
+3.偏航角例子
+![](camera_pitch.png)
+4.偏航角代码实现
+```C++
+direction.y = sin(glm::radians(pitch)); // 注意我们先把角度转为弧度
+direction.x = cos(glm::radians(pitch));
+direction.z = cos(glm::radians(pitch));
+```
+5.俯仰角例子
+![](camera_yaw.png)
+6.俯仰角代码实现
+
 
 
 
