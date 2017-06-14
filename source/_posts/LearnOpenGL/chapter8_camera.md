@@ -201,22 +201,22 @@ yoffset *= sensitivity;
 ```
 5.加到偏航角与俯仰角
 ```C++
-yaw   += xoffset;
-pitch += yoffset;
+yawAngle += xoffset;
+pitchAngle += yoffset;
 ```
 6.设置角度限制，不能高于89度(到90度视角逆转)
 ```C++
-if(pitch > 89.0f)
-  pitch =  89.0f;
-if(pitch < -89.0f)
-  pitch = -89.0f;
+if(pitchAngle > 89.0f)
+  pitchAngle =  89.0f;
+if(pitchAngle < -89.0f)
+  pitchAngle = -89.0f;
 ```
 7.得到方向向量
 ```c++
 glm::vec3 front;
-front.x = cos(glm::radians(pitch)) * cos(glm::radians(yaw));
-front.y = sin(glm::radians(pitch));
-front.z = cos(glm::radians(pitch)) * sin(glm::radians(yaw));
+front.x = cos(glm::radians(pitchAngle)) * cos(glm::radians(yawAngle));
+front.y = sin(glm::radians(pitchAngle));
+front.z = cos(glm::radians(pitchAngle)) * sin(glm::radians(yawAngle));
 cameraFront = glm::normalize(front);
 ```
 8.处理第一次鼠标进入窗口事件
