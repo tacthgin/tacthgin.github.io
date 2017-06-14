@@ -164,33 +164,97 @@ direction.z = cos(glm::radians(pitch));
 ```
 5.俯仰角例子
 ![](camera_yaw.png)
+**译注**
+**这里的球坐标与笛卡尔坐标的转换把x和z弄反了，如果你去看最后的源码，会发现作者在摄像机源码那里写了yaw = yaw – 90，实际上在这里x就应该是sin(glm::radians(yaw))，z也是同样处理，当然也可以认为是这个诡异的坐标系，但是在这里使用球坐标转笛卡尔坐标有个大问题，就是在初始渲染时，无法指定摄像机的初始朝向，还要花一些功夫自己实现这个；此外这只能实现像第一人称游戏一样的简易摄像机，类似Maya、Unity3D编辑器窗口的那种摄像机还是最好自己设置摄像机的位置、上、右、前轴，在旋转时用四元数对这四个变量进行调整，才能获得更好的效果，而不是仅仅调整摄像机前轴。**
+
 6.俯仰角代码实现
+```C++
+direction.x = cos(glm::radians(pitch)) * cos(glm::radians(yaw));//译注：direction代表摄像机的“前”轴，但此前轴是和本文第一幅图片的第二个摄像机的direction是相反的
+direction.y = sin(glm::radians(pitch));
+direction.z = cos(glm::radians(pitch)) * sin(glm::radians(yaw));
+```
 
+### 鼠标输入
+1.鼠标水平移动影响偏航角，垂直移动影响俯仰角。
+2.使用GLFW捕捉鼠标
+```C++
+glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+```
+3.设置鼠标回调事件
+```C++
+void mouse_callback(GLFWwindow* window, double xpos, double ypos);
+[...]
+glfwSetCursorPosCallback(window, mouse_callback);
+```
+4.设置鼠标偏移量，初始值设为屏幕中心(800 * 600)
+```C++
+GLfloat lastX = 400, lastY = 300;
+...
+GLfloat xoffset = xpos - lastX;
+GLfloat yoffset = lastY - ypos; // 注意这里是相反的，因为y坐标的范围是从下往上的
+lastX = xpos;
+lastY = ypos;
 
+GLfloat sensitivity = 0.05f;
+xoffset *= sensitivity;
+yoffset *= sensitivity;
+```
+5.加到偏航角与俯仰角
+```C++
+yaw   += xoffset;
+pitch += yoffset;
+```
+6.设置角度限制，不能高于89度(到90度视角逆转)
+```C++
+if(pitch > 89.0f)
+  pitch =  89.0f;
+if(pitch < -89.0f)
+  pitch = -89.0f;
+```
+7.得到方向向量
+```c++
+glm::vec3 front;
+front.x = cos(glm::radians(pitch)) * cos(glm::radians(yaw));
+front.y = sin(glm::radians(pitch));
+front.z = cos(glm::radians(pitch)) * sin(glm::radians(yaw));
+cameraFront = glm::normalize(front);
+```
+8.处理第一次鼠标进入窗口事件
+```c++
+if(firstMouse) // 这个bool变量一开始是设定为true的
+{
+  lastX = xpos;
+  lastY = ypos;
+  firstMouse = false;
+}
+```
 
+### 缩放
+1.注册鼠标滚轮事件
+```C++
+glfwSetScrollCallback(window, scroll_callback);
+```
+2.使用鼠标滚轮事件来缩放摄像机视野
+```C++
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
+{
+  if(aspect >= 1.0f && aspect <= 45.0f)
+    aspect -= yoffset;
+  if(aspect <= 1.0f)
+    aspect = 1.0f;
+  if(aspect >= 45.0f)
+    aspect = 45.0f;
+}
+```
+3.添加到观察矩阵
+```C++
+projection = glm::perspective(aspect, (GLfloat)WIDTH/(GLfloat)HEIGHT, 0.1f, 100.0f);
+```
+**Think**
+**欧拉角实现的摄像机会遇到万向节死锁问题，使用四元数比较好**
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+### 摄像机类
+使用一个类来封装摄像机
 [源代码](https://github.com/tacthgin/toy/tree/master/OpenGL)在这
 
 **源文章出处[LearnOpenGL](http://learnopengl-cn.readthedocs.io/zh/latest/01%20Getting%20started/09%20Camera/)**
