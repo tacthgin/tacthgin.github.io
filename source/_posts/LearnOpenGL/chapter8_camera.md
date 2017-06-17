@@ -15,13 +15,13 @@ glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
 ```
 
 ### 摄像机方向
-摄像机指向的方向，**方向向量(Direction Vector)**是指向z的正方向
+摄像机指向的方向，**方向向量(Direction Vector)**是指向z的正方向，与摄像机面朝的方向相反
 ```C++
 glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
 glm::vec3 cameraDirection = glm::normalize(cameraPos - cameraTarget);
 ```
 **Think**
-**我不太懂为什么是指的反方向，难道还是跟OpenGL矩阵相乘有关系**
+**我不太懂为什么是指的反方向，可能跟坐标系有关**
 
 ### 右轴
 **右向量(Right Vector)**，代表摄像机空间的x轴的正方向，定义一个**上向量(Up Vector)**与摄像机方向叉乘得到
@@ -30,13 +30,16 @@ glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
 glm::vec3 cameraRight = glm::normalize(glm::cross(up, cameraDirection));
 ```
 **Think**
-**叉乘也符合右手定律**
+**叉乘也符合右手定律，因为叉乘只需要一个平面就能得到右向量，所以随意指定一个上向量就好**
 
 ### 上轴
 使用右向量(x轴)和方向向量(z轴)叉乘得到
 ```C++
 glm::vec3 cameraUp = glm::cross(cameraDirection, cameraRight);
 ```
+
+**Think**
+**右向量加上方向向量得到垂直摄像机的上向量**
 
 ## Look At
 根据三个向量可以得到Look At矩阵，R是右向量，U是上向量，D是方向向量，P是摄像机位置向量
@@ -64,6 +67,8 @@ glm::vec3 cameraUp    = glm::vec3(0.0f, 1.0f,  0.0f);
 ```C++
 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 ```
+**Think**
+**cameraPos + cameraFront是摄像机的方向向量**
 
 3.添加摄像机移动按键事件
 ```C++
@@ -126,6 +131,8 @@ while(!glfwWindowShouldClose(window))
 }
 ```
 
+
+
 ## 移动速度
 利用循环间得帧率差，来计算速度，获取移动流畅效果
 ```C++
@@ -146,6 +153,9 @@ void do_movement()
   ...
 }
 ```
+
+<video id="video" src="move_camera.mp4" controls="" preload="none" width="480" height="320">
+</video>
 
 ## 视角移动
 使用鼠标来旋转视角
@@ -219,8 +229,29 @@ front.y = sin(glm::radians(pitchAngle));
 front.z = cos(glm::radians(pitchAngle)) * sin(glm::radians(yawAngle));
 cameraFront = glm::normalize(front);
 ```
-8.处理第一次鼠标进入窗口事件
+
+8.鼠标右键控制摄像机旋转
+```C++
+void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
+{
+  if (button == GLFW_MOUSE_BUTTON_RIGHT)
+  {
+    if (action == GLFW_PRESS)
+    {
+      firstMouse = true;
+      mouseDown = true;
+    }
+    else if (action == GLFW_RELEASE)
+      mouseDown = false;
+  }
+}
+[...]
+glfwSetMouseButtonCallback(window, mouse_button_callback);
+```
+
+9.处理第一次鼠标进入窗口事件
 ```c++
+if(!mouseDown)return;
 if(firstMouse) // 这个bool变量一开始是设定为true的
 {
   lastX = xpos;
@@ -250,8 +281,31 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 ```C++
 projection = glm::perspective(aspect, (GLfloat)WIDTH/(GLfloat)HEIGHT, 0.1f, 100.0f);
 ```
+
+### 完整初始化代码
+```C++
+int screenWidth = 800;
+int screenHeight = 600;
+
+bool keys[1024];
+bool mouseDown = false;
+
+GLfloat aspect = 45.0f;
+GLboolean firstMouse = true;
+GLfloat lastX = screenWidth / 2;
+GLfloat lastY = screenHeight / 2;
+GLfloat pitchAngle = 0.0f;
+GLfloat yawAngle = -90.0f;
+vec3 cameraPos = vec3(0.0f, 0.0f, 3.0f);
+vec3 cameraFront = vec3(0.0f, 0.0f, -1.0f);
+vec3 cameraUp = vec3(0.0f, 1.0f, 0.0f);
+```
+
 **Think**
 **欧拉角实现的摄像机会遇到万向节死锁问题，使用四元数比较好**
+
+<video id="video" src="move_rotate_camera.mp4" controls="" preload="none" width="480" height="320">
+</video>
 
 ### 摄像机类
 使用一个类来封装摄像机
