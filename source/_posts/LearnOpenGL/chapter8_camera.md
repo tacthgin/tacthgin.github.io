@@ -309,6 +309,6 @@ vec3 cameraUp = vec3(0.0f, 1.0f, 0.0f);
 
 ### 摄像机类
 使用一个类来封装摄像机
-[源代码](https://github.com/tacthgin/toy/tree/master/OpenGL)在这
+[源代码](https://github.com/tacthgin/toy/blob/master/OpenGL/src/Camera.h)在这
 
 **源文章出处[LearnOpenGL](http://learnopengl-cn.readthedocs.io/zh/latest/01%20Getting%20started/09%20Camera/)**
