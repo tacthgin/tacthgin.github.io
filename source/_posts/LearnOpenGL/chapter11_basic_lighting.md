@@ -105,5 +105,58 @@ color = vec4(result, 1.0f);
 ![](diffuse.png)
 
 ### 法线向量注意事项
+1.法线向量是方向向量，不能表达空间种的特定位置
+2.法线向量没有齐次坐标(顶点位置的w分量),平移不应该影响到法向量
+3.法向量只能应用缩放(Scale)和旋转(Rotation)变换
+4.如果模型矩阵应用不等比缩放，法向量就不再垂直表面，光照就会被扭曲
+![](basic_lighting_normal_transformation.png)
+5.利用正规矩阵(Normal Matrix)来修复法线不垂直于表面的情况，正规矩阵被定义为"模型矩阵左上角的逆矩阵(Inverse Matrix)的转置矩阵(Transpose Matrix)"，然后强制转换为3×3矩阵，避免平移的影响
+```C++
+Normal = mat3(transpose(inverse(model))) * normal;
+```
+**Tip**
+**正规矩阵计算可以看[这篇文章](http://www.lighthouse3d.com/tutorials/glsl-12-tutorial/the-normal-matrix/)**
+
+**Attention**
+**计算逆矩阵的开销比较大，应该在cpu中计算完毕，再通过uniform传送给着色器**
+
+## 镜面光照
+![](basic_lighting_specular_theory.png)
+镜面光照依据光的方向向量、物体的法向量和玩家的观察方向得出，利用反射法向量周围光源的方向计算光源的反射向量，计算反射向量和观察向量的夹角，
+角度越小，镜面光照的强度越大。当看到物体表面的时候，会出现高光效果
+
+**Important**
+**我们选择在世界空间(World Space)进行光照计算，但是大多数人趋向于在观察空间(View Space)进行光照计算。在观察空间计算的好处是，观察者的位置总是(0, 0, 0)，所以这样你直接就获得了观察者位置。可是，我发现出于学习的目的，在世界空间计算光照更符合直觉。如果你仍然希望在视野空间计算光照的话，那就使用观察矩阵应用到所有相关的需要变换的向量(不要忘记，也要改变正规矩阵)。**
+
+1.传递观察坐标
+```C++
+uniform vec3 viewPos;
+
+GLint viewPosLoc = glGetUniformLocation(lightingShader.Program, "viewPos");
+vec3 cameraPos = camera.getPos();
+glUniform3f(viewPosLoc, cameraPos.x, cameraPos.y, cameraPos.z);
+```
+2.给镜面光照一个镜面强度，计算发射向量
+```C++
+float specularStrength = 0.5f;
+vec3 viewDir = normalize(viewPos - FragPos);
+vec3 reflectDir = reflect(-lightDir, norm);
+```
+3.计算镜面光分量，32次幂是高光的**发光值(Shininess)**。发光值越高，反射光能力越强，散射的越少，高光点越小
+```C++
+float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);
+vec3 specular = specularStrength * spec * lightColor;
+```
+![](basic_lighting_specular_shininess.png)
+4.整合环境光和漫反射得出最终物体颜色
+```C++
+vec3 result = (ambient + diffuse + specular) * objectColor;
+color = vec4(result, 1.0f);
+```
+![](specular.png)
+**Importan**
+**早期的光照着色器，开发者在顶点着色器中实现冯氏光照。在顶点着色器中做这件事的优势是，相比片段来说，顶点要少得多，因此会更高效，所以(开销大的)光照计算频率会更低。然而，顶点着色器中的颜色值是只是顶点的颜色值，片段的颜色值是它与周围的颜色值的插值。结果就是这种光照看起来不会非常真实，除非使用了大量顶点。**
+![](basic_lighting_gouruad.png)
+**在顶点着色器中实现的冯氏光照模型叫做Gouraud着色，而不是冯氏着色。记住由于插值，这种光照连起来有点逊色。冯氏着色能产生更平滑的光照效果。**
 
 **源文章出处[LearnOpenGL](http://learnopengl-cn.readthedocs.io/zh/latest/02%20Lighting/02%20Basic%20Lighting/)**
