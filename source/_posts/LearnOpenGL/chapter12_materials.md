@@ -52,10 +52,10 @@ void main()
 
 2.传递数据给材质uniform
 ```C++
-GLint matAmbientLoc = glGetUniformLocation(lightingShader.Program, "material.ambient");
-GLint matDiffuseLoc = glGetUniformLocation(lightingShader.Program, "material.diffuse");
-GLint matSpecularLoc = glGetUniformLocation(lightingShader.Program, "material.specular");
-GLint matShineLoc = glGetUniformLocation(lightingShader.Program, "material.shininess");
+GLint matAmbientLoc = glGetUniformLocation(lightingShader.getProgram(), "material.ambient");
+GLint matDiffuseLoc = glGetUniformLocation(lightingShader.getProgram(), "material.diffuse");
+GLint matSpecularLoc = glGetUniformLocation(lightingShader.getProgram(), "material.specular");
+GLint matShineLoc = glGetUniformLocation(lightingShader.getProgram(), "material.shininess");
 
 glUniform3f(matAmbientLoc, 1.0f, 0.5f, 0.31f);
 glUniform3f(matDiffuseLoc, 1.0f, 0.5f, 0.31f);
@@ -90,9 +90,9 @@ vec3 diffuse = light.diffuse * (diff * material.diffuse);
 vec3 specular = light.specular * (spec * material.specular);
 ```
 ```C++
-GLint lightAmbientLoc = glGetUniformLocation(lightingShader.Program, "light.ambient");
-GLint lightDiffuseLoc = glGetUniformLocation(lightingShader.Program, "light.diffuse");
-GLint lightSpecularLoc = glGetUniformLocation(lightingShader.Program, "light.specular");
+GLint lightAmbientLoc = glGetUniformLocation(lightingShader.getProgram(), "light.ambient");
+GLint lightDiffuseLoc = glGetUniformLocation(lightingShader.getProgram(), "light.diffuse");
+GLint lightSpecularLoc = glGetUniformLocation(lightingShader.getProgram(), "light.specular");
 
 glUniform3f(lightAmbientLoc, 0.2f, 0.2f, 0.2f);
 glUniform3f(lightDiffuseLoc, 0.5f, 0.5f, 0.5f);// 让我们把这个光调暗一点，这样会看起来更自然

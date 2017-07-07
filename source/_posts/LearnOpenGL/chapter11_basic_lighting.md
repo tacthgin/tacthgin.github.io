@@ -40,8 +40,8 @@ layout (location = 1) in vec3 normal;
 ...
 ```
 ```C++
-glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid * )0);
-glEnableVertexAttribArray(0);
+glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid * )(3 * sizeof(float)));
+glEnableVertexAttribArray(1);
 ```
 **Important**
 **发光物着色器顶点数据的不完全使用看起来有点低效，但是这些顶点数据已经从立方体对象载入到GPU的内存里了，所以GPU内存不是必须再储存新数据。相对于重新给发光物分配VBO，实际上却是更高效了。**
@@ -66,7 +66,7 @@ uniform vec3 lightPos;
 ```
 更新uniform
 ```C++
-GLint lightPosLoc = glGetUniformLocation(lightingShader.Program, "lightPos");
+GLint lightPosLoc = glGetUniformLocation(lightingShader.getProgram(), "lightPos");
 glUniform3f(lightPosLoc, lightPos.x, lightPos.y, lightPos.z);
 ```
 2.计算片段的位置,把顶点乘以模型矩阵得到世界空间的坐标
@@ -132,7 +132,7 @@ Normal = mat3(transpose(inverse(model))) * normal;
 ```C++
 uniform vec3 viewPos;
 
-GLint viewPosLoc = glGetUniformLocation(lightingShader.Program, "viewPos");
+GLint viewPosLoc = glGetUniformLocation(lightingShader.getProgram(), "viewPos");
 vec3 cameraPos = camera.getPos();
 glUniform3f(viewPosLoc, cameraPos.x, cameraPos.y, cameraPos.z);
 ```
@@ -154,7 +154,7 @@ vec3 result = (ambient + diffuse + specular) * objectColor;
 color = vec4(result, 1.0f);
 ```
 ![](specular.png)
-**Importan**
+**Important**
 **早期的光照着色器，开发者在顶点着色器中实现冯氏光照。在顶点着色器中做这件事的优势是，相比片段来说，顶点要少得多，因此会更高效，所以(开销大的)光照计算频率会更低。然而，顶点着色器中的颜色值是只是顶点的颜色值，片段的颜色值是它与周围的颜色值的插值。结果就是这种光照看起来不会非常真实，除非使用了大量顶点。**
 ![](basic_lighting_gouruad.png)
 **在顶点着色器中实现的冯氏光照模型叫做Gouraud着色，而不是冯氏着色。记住由于插值，这种光照连起来有点逊色。冯氏着色能产生更平滑的光照效果。**

@@ -51,7 +51,7 @@ void main()
 
 4.更新材质中的diffuse纹理
 ```C++
-glUniform1i(glGetUniformLocation(lightingShader.Program, "material.diffuse"), 0);
+glUniform1i(glGetUniformLocation(lightingShader.getProgram(), "material.diffuse"), 0);
 ...
 glActiveTexture(GL_TEXTURE0);
 glBindTexture(GL_TEXTURE_2D, diffuseMap);
@@ -76,7 +76,7 @@ struct Material
 };
 ```
 ```C++
-glUniform1i(glGetUniformLocation(lightingShader.Program, "material.specular"), 1);
+glUniform1i(glGetUniformLocation(lightingShader.getProgram(), "material.specular"), 1);
 ...
 glActiveTexture(GL_TEXTURE1);
 glBindTexture(GL_TEXTURE_2D, specularMap);

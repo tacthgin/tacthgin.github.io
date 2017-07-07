@@ -48,8 +48,8 @@ void main()
 ```
 3.赋值物体颜色和光照颜色
 ```C++
-GLint objectColorLoc = glGetUniformLocation(lightingShader.Program, "objectColor");
-GLint lightColorLoc  = glGetUniformLocation(lightingShader.Program, "lightColor");
+GLint objectColorLoc = glGetUniformLocation(lightingShader.getProgram(), "objectColor");
+GLint lightColorLoc  = glGetUniformLocation(lightingShader.getProgram(), "lightColor");
 glUniform3f(objectColorLoc, 1.0f, 0.5f, 0.31f);// 我们所熟悉的珊瑚红
 glUniform3f(lightColorLoc,  1.0f, 1.0f, 1.0f); // 依旧把光源设置为白色
 ```

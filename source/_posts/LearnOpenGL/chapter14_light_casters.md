@@ -46,6 +46,9 @@ glUniform3f(lightDirPos, -0.2f, -1.0f, -0.3f);
 ```
 得到定向光的例子：
 ![](direction_example.png)
+**Tip**
+**这里要对法向量进行共轭转置，因为箱子进行旋转了。**
+
 ## 点光源
 点光是一个在时间里有位置的光源，它向所有方向发光，光线随距离增加逐渐变暗。想象灯泡和火炬作为投光物，它们可以扮演点光的角色。
 ![](light_casters_point.png)
@@ -65,6 +68,7 @@ Ogre3D维基所配的系数：
 ![](attenuation_table.png)
 * 常数项Kc一直是1.0
 * 选择32到100的距离对大多数光通常就足够了
+
 ### 实现衰减
 1.定义点光源,赋值衰减系数
 ```C++
@@ -98,6 +102,7 @@ specular *= attenuation;
 ```
 得到点光源的例子：
 ![](pointlight_example.png)
+
 ## 聚光
 聚光是一种位于环境中某处的光源，它不是向所有方向照射，而是只朝某个方向照射。结果是只有一个聚光照射方向的确定半径内的物体才会被照亮，其他的都保持黑暗。聚光的好例子是路灯或手电筒。
 OpenGL中的聚光用世界空间位置，一个方向和一个指定了聚光半径的切光角来表示。我们计算的每个片段，如果片段在聚光的切光方向之间（就是在圆锥体内），我们就会把片段照亮。下面的图可以让你明白聚光是如何工作的：
@@ -106,6 +111,7 @@ OpenGL中的聚光用世界空间位置，一个方向和一个指定了聚光�
 * SpotDir:聚光所指向的方向
 * Φ:定义聚光半径的切光角。每个落在这个角度之外的，聚光都不会照亮
 * θ:LightDir向量和SpotDir向量之间的角度。θ值应该比Φ值小，这样才会在聚光内
+
 ### 手电筒
 一个手电筒是一个普通的聚光，但是根据玩家的位置和方向持续的更新它的位置和方向。
 1.定义聚光
@@ -125,10 +131,11 @@ struct SpotLight
 };
 ```
 2.赋值位置、方向和切光角
+```C++
 glUniform3f(glGetUniformLocation(lightingShader.getProgram(), "spotLight.position"), cameraPos.x, cameraPos.y, cameraPos.z);
 glUniform3f(glGetUniformLocation(lightingShader.getProgram(), "spotLight.direction"), cameraFront.x, cameraFront.y, cameraFront.z);
 glUniform1f(glGetUniformLocation(lightingShader.getProgram(), "spotLight.cutOff"), cos(radians(12.5f)));
-
+```
 3.计算θ值
 ```C++
 float theta = dot(lightDir, normalize(-light.direction));
