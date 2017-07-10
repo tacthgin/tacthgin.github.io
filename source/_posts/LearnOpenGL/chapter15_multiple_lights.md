@@ -198,4 +198,5 @@ glUniform1f(glGetUniformLocation(lightingShader.getProgram(), "spotLight.quadrat
 ![](multi_light_example_no_flask.png)
 2.添加手电筒
 ![](multi_lights_example_with_flask.png)
+
 **源文章出处[LearnOpenGL](http://learnopengl-cn.readthedocs.io/zh/latest/02%20Lighting/06%20Multiple%20lights/)**
