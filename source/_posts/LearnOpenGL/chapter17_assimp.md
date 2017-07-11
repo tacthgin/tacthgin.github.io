@@ -21,4 +21,4 @@ Assimp模型文件数据结构：
 ## 构建Assimp
 从[Assimp页面下载](http://assimp.sourceforge.net/main_downloads.html),用cmake编译选择vs2015，生成lib和dll(在code/Debug目录)，lib放在工程链接，dll放在可执行，头文件从include获取
 
-**源文章出处[LearnOpenGL](http://learnopengl-cn.readthedocs.io/zh/latest/02%20Lighting/07%20Review/)**
+**源文章出处[LearnOpenGL](http://learnopengl-cn.readthedocs.io/zh/latest/03%20Model%20Loading/01%20Assimp/)**
