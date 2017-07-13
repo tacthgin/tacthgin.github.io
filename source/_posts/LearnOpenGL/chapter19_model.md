@@ -193,6 +193,8 @@ GLint Model::TextureFromFile(const char * path, const std::string & directory)
 这个模型被输出为obj和mtl文件，mtl包含模型的diffuse和specular以及法线贴图。
 加载模型后是这样的:
 ![](model_example.png)
+带有高光效果的:
+![](model_with_specular_example.png)
 查看[顶点](https://github.com/tacthgin/toy/blob/master/OpenGL/shaders/model.vs)和[片段](https://github.com/tacthgin/toy/blob/master/OpenGL/shaders/model.frag)以及[源代码](https://github.com/tacthgin/toy/blob/master/OpenGL/src/modelMain.cpp)
 
 **PS:之前发现写好代码无论如何都显示不出模型，各种调试。后来发现是着色器程序忘记使用了=。=**
