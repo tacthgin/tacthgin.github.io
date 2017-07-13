@@ -84,7 +84,7 @@ void Model::processNode(aiNode * node, const aiScene * scene)
 **现在我们没用这种系统，但是无论何时你想要对你的网格数据进行额外的控制，这通常是一种坚持被推荐的做法。这些模型毕竟是那些定义了这些节点风格的关系的艺术家所创建的。**
 
 4.从Assimp的网格数据中，取出顶点数据，索引数据，纹理数据
-获取定点数据
+获取顶点数据
 ```C++
 for (GLuint i = 0; i < mesh->mNumVertices; i++)
 {
@@ -195,7 +195,7 @@ GLint Model::TextureFromFile(const char * path, const std::string & directory)
 ![](model_example.png)
 带有高光效果的:
 ![](model_with_specular_example.png)
-查看[顶点](https://github.com/tacthgin/toy/blob/master/OpenGL/shaders/model.vs)和[片段](https://github.com/tacthgin/toy/blob/master/OpenGL/shaders/model.frag)以及[源代码](https://github.com/tacthgin/toy/blob/master/OpenGL/src/modelMain.cpp)
+查看[顶点](https://github.com/tacthgin/toy/blob/master/OpenGL/shaders/model.vs)和[片段](https://github.com/tacthgin/toy/blob/master/OpenGL/shaders/model.frag)着色器以及[源代码](https://github.com/tacthgin/toy/blob/master/OpenGL/src/modelMain.cpp)
 
 **PS:之前发现写好代码无论如何都显示不出模型，各种调试。后来发现是着色器程序忘记使用了=。=**
 
