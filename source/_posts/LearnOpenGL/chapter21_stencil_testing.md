@@ -53,22 +53,69 @@ void glStencilOp(GLenum sfail, GLenum dpfail, GLenum dppass)
 * sfail： 如果模板测试失败将采取的动作。
 * sfaidpfaill： 如果模板测试通过，但是深度测试失败时采取的动作。
 * dppass： 如果深度测试和模板测试都通过，将采取的动作。
+
 每个选项都可以使用下列任何一个动作：
 ![](stencil_action.png)
+glStencilOp函数默认设置为 (GL_KEEP, GL_KEEP, GL_KEEP) ，所以任何测试的任何结果，模板缓冲都会保留它的值。默认行为不会更新模板缓冲，所以如果你想写入模板缓冲的话，你必须像任意选项指定至少一个不同的动作。
 
+## 物体轮廓
+**物体轮廓(Object Outlining)**是给物体创建一个有颜色的边，加上轮廓的步骤如下：
+1.在绘制物体前，把模板方程设置为GL_ALWAYS，用1更新物体将被渲染的片段。
+2.渲染物体，写入模板缓冲。
+3.关闭模板写入和深度测试。
+4.每个物体放大一点点。
+5.使用一个不同的片段着色器用来输出一个纯颜色。
+6.再次绘制物体，但只是当它们的片段的模板值不为1时才进行。
+7.开启模板写入和深度测试。
+先画出正常的箱子：
+```C++
+glStencilFunc(GL_ALWAYS, 1, 0xFF); //所有片段都要写入模板缓冲
+glStencilMask(0xFF); // 设置模板缓冲为可写状态
+normalShader.Use();
+DrawTwoContainers();
+```
+然后模板缓冲更新为1了，绘制放大的箱子，关闭模板缓冲的写入：
+```C++
+glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+glStencilMask(0x00); // 禁止修改模板缓冲
+glDisable(GL_DEPTH_TEST);
+shaderSingleColor.Use();
+DrawTwoScaledUpContainers();
+```
+shaderSingleColor为外框的颜色，定义如下：
+```C++
+void main()
+{
+    outColor = vec4(0.04, 0.28, 0.26, 1.0);
+}
+```
+我们把模板方程设置为GL_NOTEQUAL，它保证我们只箱子上不等于1的部分，这样只绘制前面绘制的箱子外围的那部分。注意，我们也要关闭深度测试，这样放大的的箱子也就是边框才不会被地面覆盖。
+总体绘制方法类似这样:
+```C++
+glEnable(GL_DEPTH_TEST);
+glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);  
 
+glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
+glStencilMask(0x00); // 绘制地板时确保关闭模板缓冲的写入
+normalShader.Use();
+DrawFloor()  
 
+glStencilFunc(GL_ALWAYS, 1, 0xFF);
+glStencilMask(0xFF);
+DrawTwoContainers();
 
+glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+glStencilMask(0x00);
+glDisable(GL_DEPTH_TEST);
+shaderSingleColor.Use();
+DrawTwoScaledUpContainers();
+glStencilMask(0xFF);
+glEnable(GL_DEPTH_TEST);
+```
+例子：
+![](stencil_scene_outlined.png)
 
-
-
-
-
-
-
-
-
-
+**PS：说实话我有点懵逼**
 
 **源文章出处[LearnOpenGL](http://learnopengl-cn.readthedocs.io/zh/latest/04%20Advanced%20OpenGL/02%20Stencil%20testing/)**
