@@ -9,7 +9,7 @@ category: LearnOpenGL
 ## 创建窗口
 这里我们直接用代码展示如何创建一个窗口：
 
-```C++
+```c++
 	#include <iostream>
 	#define GLEW_STATIC    //静态链接GLEW
 	#include <GL/glew.h>

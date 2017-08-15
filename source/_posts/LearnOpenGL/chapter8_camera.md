@@ -10,13 +10,13 @@ category: LearnOpenGL
 ![](camera_axes.png)
 ### 摄像机位置
 世界坐标中的摄像机位置，正z轴的位置就是摄像机后退的位置
-```C++
+```c++
 glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
 ```
 
 ### 摄像机方向
 摄像机指向的方向，**方向向量(Direction Vector)**是指向z的正方向，与摄像机面朝的方向相反
-```C++
+```c++
 glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
 glm::vec3 cameraDirection = glm::normalize(cameraPos - cameraTarget);
 ```
@@ -25,7 +25,7 @@ glm::vec3 cameraDirection = glm::normalize(cameraPos - cameraTarget);
 
 ### 右轴
 **右向量(Right Vector)**，代表摄像机空间的x轴的正方向，定义一个**上向量(Up Vector)**与摄像机方向叉乘得到
-```C++
+```c++
 glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f); 
 glm::vec3 cameraRight = glm::normalize(glm::cross(up, cameraDirection));
 ```
@@ -34,7 +34,7 @@ glm::vec3 cameraRight = glm::normalize(glm::cross(up, cameraDirection));
 
 ### 上轴
 使用右向量(x轴)和方向向量(z轴)叉乘得到
-```C++
+```c++
 glm::vec3 cameraUp = glm::cross(cameraDirection, cameraRight);
 ```
 
@@ -47,7 +47,7 @@ glm::vec3 cameraUp = glm::cross(cameraDirection, cameraRight);
 **Think**
 **我又懵逼了，这里位置向量是相反的，原文章说把世界平移到与我们自身移动的相反方向**
 
-```C++
+```c++
 glm::mat4 view;
 view = glm::lookAt(glm::vec3(0.0f, 0.0f, 3.0f), 
 glm::vec3(0.0f, 0.0f, 0.0f), 
@@ -58,20 +58,20 @@ glm::vec3(0.0f, 1.0f, 0.0f));
 
 ## 自由移动
 1.自定义相机的向量
-```C++
+```c++
 glm::vec3 cameraPos   = glm::vec3(0.0f, 0.0f,  3.0f);
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 cameraUp    = glm::vec3(0.0f, 1.0f,  0.0f);
 ```
 2.得出LookAt函数
-```C++
+```c++
 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 ```
 **Think**
 **cameraPos + cameraFront是摄像机的方向向量**
 
 3.添加摄像机移动按键事件
-```C++
+```c++
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode)
 {
     ...
@@ -90,7 +90,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 **对右向量进行标准化，获得匀速效果**
 
 4.处理按键按下/释放
-```C++
+```c++
 bool keys[1024];
 
 [...]
@@ -135,7 +135,7 @@ while(!glfwWindowShouldClose(window))
 
 ## 移动速度
 利用循环间得帧率差，来计算速度，获取移动流畅效果
-```C++
+```c++
 GLfloat deltaTime = 0.0f;   // 当前帧遇上一帧的时间差
 GLfloat lastFrame = 0.0f;   // 上一帧的时间
 
@@ -167,7 +167,7 @@ void do_movement()
 3.偏航角例子
 ![](camera_pitch.png)
 4.偏航角代码实现
-```C++
+```c++
 direction.y = sin(glm::radians(pitch)); // 注意我们先把角度转为弧度
 direction.x = cos(glm::radians(pitch));
 direction.z = cos(glm::radians(pitch));
@@ -178,7 +178,7 @@ direction.z = cos(glm::radians(pitch));
 **这里的球坐标与笛卡尔坐标的转换把x和z弄反了，如果你去看最后的源码，会发现作者在摄像机源码那里写了yaw = yaw – 90，实际上在这里x就应该是sin(glm::radians(yaw))，z也是同样处理，当然也可以认为是这个诡异的坐标系，但是在这里使用球坐标转笛卡尔坐标有个大问题，就是在初始渲染时，无法指定摄像机的初始朝向，还要花一些功夫自己实现这个；此外这只能实现像第一人称游戏一样的简易摄像机，类似Maya、Unity3D编辑器窗口的那种摄像机还是最好自己设置摄像机的位置、上、右、前轴，在旋转时用四元数对这四个变量进行调整，才能获得更好的效果，而不是仅仅调整摄像机前轴。**
 
 6.俯仰角代码实现
-```C++
+```c++
 direction.x = cos(glm::radians(pitch)) * cos(glm::radians(yaw));//译注：direction代表摄像机的“前”轴，但此前轴是和本文第一幅图片的第二个摄像机的direction是相反的
 direction.y = sin(glm::radians(pitch));
 direction.z = cos(glm::radians(pitch)) * sin(glm::radians(yaw));
@@ -187,17 +187,17 @@ direction.z = cos(glm::radians(pitch)) * sin(glm::radians(yaw));
 ### 鼠标输入
 1.鼠标水平移动影响偏航角，垂直移动影响俯仰角。
 2.使用GLFW捕捉鼠标
-```C++
+```c++
 glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 ```
 3.设置鼠标回调事件
-```C++
+```c++
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 [...]
 glfwSetCursorPosCallback(window, mouse_callback);
 ```
 4.设置鼠标偏移量，初始值设为屏幕中心(800 * 600)
-```C++
+```c++
 GLfloat lastX = 400, lastY = 300;
 ...
 GLfloat xoffset = xpos - lastX;
@@ -210,12 +210,12 @@ xoffset *= sensitivity;
 yoffset *= sensitivity;
 ```
 5.加到偏航角与俯仰角
-```C++
+```c++
 yawAngle += xoffset;
 pitchAngle += yoffset;
 ```
 6.设置角度限制，不能高于89度(到90度视角逆转)
-```C++
+```c++
 if(pitchAngle > 89.0f)
   pitchAngle =  89.0f;
 if(pitchAngle < -89.0f)
@@ -231,7 +231,7 @@ cameraFront = glm::normalize(front);
 ```
 
 8.鼠标右键控制摄像机旋转
-```C++
+```c++
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 {
   if (button == GLFW_MOUSE_BUTTON_RIGHT)
@@ -262,11 +262,11 @@ if(firstMouse) // 这个bool变量一开始是设定为true的
 
 ### 缩放
 1.注册鼠标滚轮事件
-```C++
+```c++
 glfwSetScrollCallback(window, scroll_callback);
 ```
 2.使用鼠标滚轮事件来缩放摄像机视野
-```C++
+```c++
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
   if(aspect >= 1.0f && aspect <= 45.0f)
@@ -278,12 +278,12 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 }
 ```
 3.添加到观察矩阵
-```C++
+```c++
 projection = glm::perspective(aspect, (GLfloat)WIDTH/(GLfloat)HEIGHT, 0.1f, 100.0f);
 ```
 
 ### 完整初始化代码
-```C++
+```c++
 int screenWidth = 800;
 int screenHeight = 600;
 

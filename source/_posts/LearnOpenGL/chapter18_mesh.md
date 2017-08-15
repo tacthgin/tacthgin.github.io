@@ -9,7 +9,7 @@ category: LearnOpenGL
 ## 封装网格类
 一个网格(Mesh)代表一个可绘制实体，一个网格应该至少需要一组顶点，每个顶点包含一个位置向量，一个法线向量，一个纹理坐标向量。一个网格也应该包含一个索引绘制用的索引，以纹理（diffuse/specular map）形式表现的材质数据。
 1.定义顶点类
-```C++
+```c++
 class Vertex
 {
 public:
@@ -19,7 +19,7 @@ public:
 };
 ```
 2.定义纹理类
-```C++
+```c++
 class Texture
 {
 public:
@@ -29,7 +29,7 @@ public:
 };
 ```
 3.定义网格类
-```C++
+```c++
 class Mesh
 {
 public:
@@ -48,7 +48,7 @@ private:
 };
 ```
 ## 初始化
-```C++
+```c++
 Mesh::Mesh(const std::vector<Vertex>& vertices, const std::vector<GLuint>& indices, const std::vector<Texture>& textures)
 :_vertices(vertices)
 ,_indices(indices)
@@ -57,7 +57,7 @@ Mesh::Mesh(const std::vector<Vertex>& vertices, const std::vector<GLuint>& indic
 	setupMesh();
 }
 ```
-```C++
+```c++
 void Mesh::setupMesh()
 {
 	glGenVertexArrays(1, &_VAO);
@@ -86,12 +86,12 @@ void Mesh::setupMesh()
 ```
 * 因为数组的内存排列是连续的，所以可以用&_vertices[0]首地址
 * offsetof可以获取到成员变量的偏移地址
-```C++
+```c++
 #define offsetof(s,m) ((size_t)&reinterpret_cast<char const volatile&>((((s*)0)->m)))
 ```
 ## 渲染
 1.由于不知道一个网格需要的diffuse贴图和specular贴图个数，可以使用格式化纹理名字的方式来传递,或者采用定义一个较大的数组，然后赋值的方式
-```C++
+```c++
 uniform sampler2D texture_diffuse1;
 uniform sampler2D texture_diffuse2;
 uniform sampler2D texture_diffuse3;
@@ -99,7 +99,7 @@ uniform sampler2D texture_specular1;
 uniform sampler2D texture_specular2;
 ```
 2.实现draw函数
-```C++
+```c++
 void Mesh::draw(const Shader & shader)
 {
 	GLuint diffuseNr = 1;

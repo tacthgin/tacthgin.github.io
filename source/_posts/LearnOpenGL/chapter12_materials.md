@@ -8,7 +8,7 @@ category: LearnOpenGL
 
 在真实世界里，每个物体会对光产生不同的反应。钢看起来比陶瓷花瓶更闪闪发光，一个木头箱子不会像钢箱子一样对光产生很强的反射。每个物体对镜面高光也有不同的反应。有些物体不会散射(Scatter)很多光却会反射(Reflect)很多光，结果看起来就有一个较小的高光点(Highlight)，有些物体散射了很多，它们就会产生一个半径更大的高光。如果我们想要在OpenGL中模拟多种类型的物体，我们必须为每个物体分别定义材质(Material)属性。
 ## 定义材质
-```C++
+```c++
 #version 330 core
 struct Material
 {
@@ -27,7 +27,7 @@ uniform Material material;
 ![](materials_real_world.png)
 ## 设置材质
 1.在着色器插入材质颜色
-```C++
+```c++
 void main()
 {
     // 环境光
@@ -51,7 +51,7 @@ void main()
 ```
 
 2.传递数据给材质uniform
-```C++
+```c++
 GLint matAmbientLoc = glGetUniformLocation(lightingShader.getProgram(), "material.ambient");
 GLint matDiffuseLoc = glGetUniformLocation(lightingShader.getProgram(), "material.diffuse");
 GLint matSpecularLoc = glGetUniformLocation(lightingShader.getProgram(), "material.specular");
@@ -67,13 +67,13 @@ glUniform1f(matShineLoc, 32.0f);
 
 ## 光的属性
 1.这个物体太亮了。物体过亮的原因是环境、漫反射和镜面三个颜色任何一个光源都会去全力反射。代码类似这样：
-```C++
+```c++
 vec3 ambient = vec3(1.0f) * material.ambient;
 vec3 diffuse = vec3(1.0f) * (diff * material.diffuse);
 vec3 specular = vec3(1.0f) * (spec * material.specular);
 ```
 2.光源应该对环境、漫反射和镜面元素同时具有不同的强度。使用独立的光属性影响每个光照元素，创建一个光源：
-```C++
+```c++
 struct Light
 {
     vec3 position;
@@ -84,12 +84,12 @@ struct Light
 uniform Light light;
 ```
 3.更新片段着色器，并且设置光的亮度
-```C++
+```c++
 vec3 ambient = light.ambient * material.ambient;
 vec3 diffuse = light.diffuse * (diff * material.diffuse);
 vec3 specular = light.specular * (spec * material.specular);
 ```
-```C++
+```c++
 GLint lightAmbientLoc = glGetUniformLocation(lightingShader.getProgram(), "light.ambient");
 GLint lightDiffuseLoc = glGetUniformLocation(lightingShader.getProgram(), "light.diffuse");
 GLint lightSpecularLoc = glGetUniformLocation(lightingShader.getProgram(), "light.specular");
@@ -102,7 +102,7 @@ glUniform3f(lightSpecularLoc, 1.0f, 1.0f, 1.0f);
 
 ## 不同的光源颜色
 使用sin和glfwGetTime动态改变光的环境和漫反射颜色:
-```C++
+```c++
 vec3 lightColor;
 lightColor.x = sin(glfwGetTime() * 2.0f);
 lightColor.y = sin(glfwGetTime() * 0.7f);

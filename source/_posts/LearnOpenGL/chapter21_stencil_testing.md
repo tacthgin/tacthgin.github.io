@@ -21,15 +21,15 @@ category: LearnOpenGL
 * 渲染（其他）物体，这次基于模板缓冲内容丢弃特定片段。
 
 1.使用GL_STENCIL_TEST开启模板测试
-```C++
+```c++
 glEnable(GL_STENCIL_TEST);
 ```
 2.清空模板缓冲
-```C++
+```c++
 glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 ```
 3.给模板值设置一个**位遮罩(Bitmask)**，它与模板值进行按位与(AND)运算决定缓冲是否可写。
-```C++
+```c++
 // 0xFF == 0b11111111
 //此时，模板值与它进行按位与运算结果是模板值，模板缓冲可写
 glStencilMask(0xFF); 
@@ -45,7 +45,7 @@ void glStencilFunc(GLenum func, GLint ref, GLuint mask)函数有三个参数：
 * ref：指定模板测试的引用值。模板缓冲的内容会与这个值对比。
 * mask:指定一个遮罩，在模板测试对比引用值和储存的模板值前，对它们进行按位与（and）操作，初始设置为1。
 例子：
-```C++
+```c++
 glStencilFunc(GL_EQUAL, 1, 0xFF);
 ```
 glStencilOp描述我们如何更新缓冲
@@ -68,14 +68,14 @@ glStencilOp函数默认设置为 (GL_KEEP, GL_KEEP, GL_KEEP) ，所以任何测�
 6.再次绘制物体，但只是当它们的片段的模板值不为1时才进行。
 7.开启模板写入和深度测试。
 先画出正常的箱子：
-```C++
+```c++
 glStencilFunc(GL_ALWAYS, 1, 0xFF); //所有片段都要写入模板缓冲
 glStencilMask(0xFF); // 设置模板缓冲为可写状态
 normalShader.Use();
 DrawTwoContainers();
 ```
 然后模板缓冲更新为1了，绘制放大的箱子，关闭模板缓冲的写入：
-```C++
+```c++
 glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
 glStencilMask(0x00); // 禁止修改模板缓冲
 glDisable(GL_DEPTH_TEST);
@@ -83,7 +83,7 @@ shaderSingleColor.Use();
 DrawTwoScaledUpContainers();
 ```
 shaderSingleColor为外框的颜色，定义如下：
-```C++
+```c++
 void main()
 {
     outColor = vec4(0.04, 0.28, 0.26, 1.0);
@@ -91,7 +91,7 @@ void main()
 ```
 我们把模板方程设置为GL_NOTEQUAL，它保证我们只箱子上不等于1的部分，这样只绘制前面绘制的箱子外围的那部分。注意，我们也要关闭深度测试，这样放大的的箱子也就是边框才不会被地面覆盖。
 总体绘制方法类似这样:
-```C++
+```c++
 glEnable(GL_DEPTH_TEST);
 glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);  
 

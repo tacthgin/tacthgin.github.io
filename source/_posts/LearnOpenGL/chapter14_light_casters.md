@@ -10,7 +10,7 @@ category: LearnOpenGL
 当一个光源很远的时候，来自光源的每条光线接近于平行。这看起来就像所有的光线来自于同一个方向，无论物体和观察者在哪儿。当一个光源被设置为无限远时，它被称为定向光(Directional Light)，因为所有的光线都有着同一个方向；它会独立于光源的位置。太阳就是一个方向光：
 ![](light_casters_directional.png)
 1.所有的光都是平行的，所以只需要光的方向向量
-```C++
+```c++
 struct DirectionLight
 {
 	vec3 direction;
@@ -29,7 +29,7 @@ void main()
 **现在使用的光照计算需要光的方向作为一个来自片段朝向的光源的方向，所以对光的方向取反**
 
 2.创建10个箱子的物体，并给方向光一个方向
-```C++
+```c++
 for(GLuint i = 0; i < 10; i++)
 {
     model = mat4();
@@ -40,7 +40,7 @@ for(GLuint i = 0; i < 10; i++)
     glDrawArrays(GL_TRIANGLES, 0, 36);
 }
 ```
-```C++
+```c++
 GLint lightDirPos = glGetUniformLocation(lightingShader.getProgram(), "directionLight.direction");
 glUniform3f(lightDirPos, -0.2f, -1.0f, -0.3f);
 ```
@@ -71,7 +71,7 @@ Ogre3D维基所配的系数：
 
 ### 实现衰减
 1.定义点光源,赋值衰减系数
-```C++
+```c++
 struct PointLight
 {
 	vec3 position;
@@ -83,19 +83,19 @@ struct PointLight
 	float quaderatic;
 };
 ```
-```C++
+```c++
 glUniform1f(glGetUniformLocation(lightingShader.getProgram(), "pointLight.constant"), 1.0f);
 glUniform1f(glGetUniformLocation(lightingShader.getProgram(), "pointLight.linear"), 0.09);
 glUniform1f(glGetUniformLocation(lightingShader.getProgram(), "pointLight.quadratic"), 0.032);
 ```
 2.计算衰减值
-```C++
+```c++
 float distance = length(light.position - FragPos);
 float attenuation = 1.0f / (light.constant + light.linear*distance +light.quadratic*(distance*distance));
 ```
 **Important**
 **我们可以可以把ambient元素留着不变，这样amient光照就不会随着距离减少，但是如果我们使用多余1个的光源，所有的ambient元素会开始叠加，因此这种情况，我们希望ambient光照也衰减。简单的调试出对于你的环境来说最好的效果。**
-```C++
+```c++
 ambient *= attenuation;
 diffuse *= attenuation;
 specular *= attenuation;
@@ -115,7 +115,7 @@ OpenGL中的聚光用世界空间位置，一个方向和一个指定了聚光�
 ### 手电筒
 一个手电筒是一个普通的聚光，但是根据玩家的位置和方向持续的更新它的位置和方向。
 1.定义聚光
-```C++
+```c++
 struct SpotLight
 {
 	vec3 position;
@@ -131,13 +131,13 @@ struct SpotLight
 };
 ```
 2.赋值位置、方向和切光角
-```C++
+```c++
 glUniform3f(glGetUniformLocation(lightingShader.getProgram(), "spotLight.position"), cameraPos.x, cameraPos.y, cameraPos.z);
 glUniform3f(glGetUniformLocation(lightingShader.getProgram(), "spotLight.direction"), cameraFront.x, cameraFront.y, cameraFront.z);
 glUniform1f(glGetUniformLocation(lightingShader.getProgram(), "spotLight.cutOff"), cos(radians(12.5f)));
 ```
 3.计算θ值
-```C++
+```c++
 float theta = dot(lightDir, normalize(-light.direction));
 if(theta > light.cutOff)
 {
@@ -161,7 +161,7 @@ else // 否则使用环境光，使得场景不至于完全黑暗
 很难用图画描述出这个公式是怎样工作的，所以我们尝试使用一个例子：
 ![](spotlight_strength.png)
 1.添加外切光角outerCutOff
-```C++
+```c++
 struct SpotLight
 {
 	vec3 position;
@@ -177,7 +177,7 @@ struct SpotLight
 };
 ```
 2.计算漫射光和镜面光的外切光强度
-```C++
+```c++
 float theta = dot(lightDir, normalize(-light.direction));
 float epsilon = light.cutOff - light.outerCutOff;
 float intensity = clamp((theta - light.outerCutOff) / epsilon,0.0, 1.0);
@@ -190,7 +190,7 @@ specular* = intensity;
 3.内切光角12.5f，外切光角17.5f得出的聚光例子：
 ![](flask_light.png)
 4.手电筒完整片段着色器
-```C++
+```c++
 void main()
 {
 	vec3 lightDir = normalize(spotLight.position - FragPos);

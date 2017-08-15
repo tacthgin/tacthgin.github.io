@@ -22,13 +22,13 @@ GLFW可以从它官方网站的[下载页](http://www.glfw.org/download.html)上
 2.在Linker(链接器)选项卡里的Input(输入)选项卡里添加glfw3.lib这个文件：
 ![](2.png)
 3.添加头文件
-```C++
+```c++
 #include <GLFW\glfw3.h>
 ```
 ## GLEW
 因为OpenGL只是一个标准/规范，具体的实现是由驱动开发商针对特定显卡实现的。由于OpenGL驱动版本众多，它大多数函数的位置都无法在编译时确定下来，需要在运行时查询。
 任务就落在了开发者身上，开发者需要在运行时获取函数地址并将其保存在一个函数指针中供以后使用。取得地址的方法因平台而异，在Windows上会是类似这样：
-```C++
+```c++
 // 定义函数原型 
 typedef void (*GL_GENBUFFERS) (GLsizei, GLuint*);
 // 找到正确的函数并赋值给函数指针 
@@ -42,7 +42,7 @@ glGenBuffers(1, &buffer);
 ## 编译和链接GLEW
 我们使用GLEW的静态版本glew32s.lib（注意这里的“s”），将库文件添加到你的库目录，将include内容添加到你的include目录。接下来，在VS的链接器选项里加上glew32s.lib。注意GLFW3（默认）也是编译成了一个静态库。
 如果你希望静态链接GLEW，必须在包含GLEW头文件之前定义预处理器宏GLEW_STATIC：
-```C++
+```c++
 #define GLEW_STATIC
 #include <GL/glew.h>
 ```

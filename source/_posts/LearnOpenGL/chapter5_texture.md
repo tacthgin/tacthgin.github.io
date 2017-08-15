@@ -11,7 +11,7 @@ category: LearnOpenGL
 2.纹理坐标从左下角(0, 0)到右上角(1,1),剩余的片段会进行片段插值(Fragment Interpolation)
 纹理坐标:
 ![](tex_coords.png)
-```C++
+```c++
 GLfloat texCoords[] = {
     0.0f, 0.0f, // 左下角
     1.0f, 0.0f, // 右下角
@@ -26,13 +26,13 @@ GLfloat texCoords[] = {
 ![](texture_wrapping.png)
 
 2.使用glTexParameter*对单独坐标轴设置(s, t, r(3D纹理使用)类似x, y, z)
-```C++
+```c++
 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
 ```
 
 3.使用glTexParameterfv指定GL_TEXTURE_BORDER_COLOR方式的颜色
-```C++
+```c++
 float borderColor[] = { 1.0f, 1.0f, 0.0f, 1.0f };
 glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
 ```
@@ -49,7 +49,7 @@ glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
 ![](texture_filtering.png)
 
 4.进行放大(Magnify)和缩小(Minify)设置
-```C++
+```c++
 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 ```
@@ -59,7 +59,7 @@ glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 ![](mipmaps.png)
 
 2.多级渐远纹理只在纹理缩小的时候才能使用
-```C++
+```c++
 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 ```
@@ -67,12 +67,12 @@ glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 ## 加载与创建纹理
 ### SOIL(Simple OpenGL Image Library)
 1.使用SOIL库,从[主页](http://www.lonesock.net/soil.html)下载,使用vs生成lib,在include文件夹添加src文件夹的内容,并把lib添加到链接选项,导入头文件
-```C++
+```c++
 #include <SOIL.h>
 ```
 
 2.加载一张图片
-```C++
+```c++
 int width, height;
 unsigned char* image = SOIL_load_image("../images/timg.jpg", &width, &height, 0, SOIL_LOAD_RGBA);
 ```
@@ -80,18 +80,18 @@ unsigned char* image = SOIL_load_image("../images/timg.jpg", &width, &height, 0,
 
 ### 生成纹理
 1.创建纹理ID
-```C++
+```c++
 GLuint texture;
 glGenTextures(1, &texture);
 ```
 
 2.绑定纹理
-```C++
+```c++
 glBindTexture(GL_TEXTURE_2D, texture);
 ```
 
 3.加载纹理
-```C++
+```c++
 glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
 glGenerateMipmap(GL_TEXTURE_2D);
 ```
@@ -99,13 +99,13 @@ glGenerateMipmap(GL_TEXTURE_2D);
 * 第六个参数应该总是被设为0（历史遗留问题）。
 
 4.释放资源
-```C++
+```c++
 SOIL_free_image_data(image);
 glBindTexture(GL_TEXTURE_2D, 0);
 ```
 
 5.例子
-```C++
+```c++
 GLuint texture;
 glGenTextures(1, &texture);
 glBindTexture(GL_TEXTURE_2D, texture);
@@ -125,7 +125,7 @@ glBindTexture(GL_TEXTURE_2D, 0);
 
 ### 应用纹理
 1.把纹理坐标更新到顶点数据中
-```C++
+```c++
 	GLfloat vertices[] = {
 //     ---- 位置 ----        ---- 颜色 ----       - 纹理坐标 -
 		 0.5f,  0.5f, 0.0f,  1.0f, 0.0f, 0.0f,  1.0f, 1.0f, //右上
@@ -137,13 +137,13 @@ glBindTexture(GL_TEXTURE_2D, 0);
 
 2.使用纹理顶点属性
 ![](vertex_attribute_pointer_interleaved_textures.png)
-```C++
+```c++
 glVertexAttribPointer(2, 2, GL_FLOAT,GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(6 * sizeof(GLfloat)));
 glEnableVertexAttribArray(2);
 ```
 
 3.修改顶点着色器
-```C++
+```c++
 #version 330 core
 layout (location = 0) in vec3 position;
 layout (location = 1) in vec3 color;
@@ -161,7 +161,7 @@ void main()
 ```
 
 4.修改片段着色器
-```C++
+```c++
 #version 330 core
 in vec3 ourColor;
 in vec2 TexCoord;
@@ -178,7 +178,7 @@ void main()
 texture函数来采样纹理的颜色，它第一个参数是纹理采样器，第二个参数是对应的纹理坐标。texture函数会使用之前设置的纹理参数对相应的颜色值进行采样。这个片段着色器的输出就是纹理的（插值）纹理坐标上的(过滤后的)颜色。
 
 5.绑定纹理,画出图形
-```C++
+```c++
 glBindTexture(GL_TEXTURE_2D, texture);
 glBindVertexArray(VAO);
 glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
@@ -188,7 +188,7 @@ glBindVertexArray(0);
 ![](texture.png)
 
 6.纹理混合颜色
-```C++
+```c++
 color = texture(ourTexture, TexCoord) * vec4(ourColor, 1.0f);
 ```
 
@@ -198,7 +198,7 @@ color = texture(ourTexture, TexCoord) * vec4(ourColor, 1.0f);
 1.通过分配给纹理采样器一个位置值,可以在片段着色器设置多个纹理
 2.一个纹理的位置值称为一个纹理单元,默认的激活纹理单元是0
 3.激活纹理单元
-```C++
+```c++
 glActiveTexture(GL_TEXTURE0); //在绑定纹理之前先激活纹理单元
 glBindTexture(GL_TEXTURE_2D, texture);
 ```
@@ -207,7 +207,7 @@ glBindTexture(GL_TEXTURE_2D, texture);
 **OpenGL至少保证有16个纹理单元供你使用，也就是说你可以激活从GL_TEXTURE0到GL_TEXTRUE15。它们都是按顺序定义的，所以我们也可以通过GL_TEXTURE0 + 8的方式获得GL_TEXTURE8，这在当我们需要循环一些纹理单元的时候会很有用。**
 
 4.在片段着色器中添加采样器
-```C++
+```c++
 #version 330 core
 ...
 
@@ -222,7 +222,7 @@ void main()
 mix第三个参数表示返回80%的第一个输入颜色和20%的第二个输入颜色
 
 5.使用例子:
-```C++
+```c++
 glActiveTexture(GL_TEXTURE0);
 glBindTexture(GL_TEXTURE_2D, texture1);
 glUniform1i(glGetUniformLocation(shader.getProgram(), "ourTexture1"), 0);

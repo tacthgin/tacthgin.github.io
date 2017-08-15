@@ -96,14 +96,14 @@ m×n矩阵乘以n×p矩阵,得出m×p矩阵
 ## GLM(OpenGL Mathematics)
 1.GLM是一个只有头文件的库,从这个[网站](http://glm.g-truc.net/0.9.5/index.html)下载
 2.把glm文件夹放在工程include目录下,添加头文件
-```C++
+```c++
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 ```
 
 3.在顶点着色器添加变换矩阵
-```C++
+```c++
 #version 330 core
 layout (location = 0) in vec3 position;
 layout (location = 1) in vec3 color;
@@ -123,7 +123,7 @@ void main()
 ```
 
 4.在画图中，使用sin变化scale大小，随时间来rotate
-```C++
+```c++
 glm::mat4 trans;
 GLfloat scale = abs(sinf((GLfloat)glfwGetTime()));
 trans = glm::scale(trans, glm::vec3(scale, scale, 0.0f));

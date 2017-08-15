@@ -8,21 +8,21 @@ category: LearnOpenGL
 
 ## 颜色
 1.使用向量定义一个颜色(RGB)
-```C++
+```c++
 glm::vec3 coral(1.0f, 0.5f, 0.31f);
 ```
 2.光源和物体颜色的反射运算
 
 ![](light_reflection.png)
 
-```C++
+```c++
 glm::vec3 lightColor(1.0f, 1.0f, 1.0f);
 glm::vec3 toyColor(1.0f, 0.5f, 0.31f);
 glm::vec3 result = lightColor * toyColor; // = (1.0f, 0.5f, 0.31f);
 ```
 ## 光照场景
 1.创建一个光照VAO
-```C++
+```c++
 GLuint lightVAO;
 glGenVertexArrays(1, &lightVAO);
 glBindVertexArray(lightVAO);
@@ -34,7 +34,7 @@ glEnableVertexAttribArray(0);
 glBindVertexArray(0);
 ```
 2.修改片段着色器，受光照影响
-```C++
+```c++
 #version 330 core
 out vec4 color;
 
@@ -47,14 +47,14 @@ void main()
 }
 ```
 3.赋值物体颜色和光照颜色
-```C++
+```c++
 GLint objectColorLoc = glGetUniformLocation(lightingShader.getProgram(), "objectColor");
 GLint lightColorLoc  = glGetUniformLocation(lightingShader.getProgram(), "lightColor");
 glUniform3f(objectColorLoc, 1.0f, 0.5f, 0.31f);// 我们所熟悉的珊瑚红
 glUniform3f(lightColorLoc,  1.0f, 1.0f, 1.0f); // 依旧把光源设置为白色
 ```
 4.创建光源shader，纯白色的光
-```C++
+```c++
 #version 330 core
 out vec4 color;
 
@@ -64,7 +64,7 @@ void main()
 }
 ```
 5.设置光源位置,大小
-```C++
+```c++
 glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
 [...]
 model = glm::mat4();
@@ -72,7 +72,7 @@ model = glm::translate(model, lightPos);
 model = glm::scale(model, glm::vec3(0.2f));
 ```
 6.绘制立方体
-```C++
+```c++
 lampShader.Use();
 // 设置模型、视图和投影矩阵uniform
 ...

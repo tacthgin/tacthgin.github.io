@@ -14,7 +14,7 @@ category: LearnOpenGL
 **要记住的是sampler2D也叫做模糊类型，这意味着我们不能以某种类型对它实例化，只能用uniform定义它们。如果我们用结构体而不是uniform实例化（就像函数的参数那样），GLSL会抛出奇怪的错误；这同样也适用于其他模糊类型。**
 
 1.移除材质中的amibient颜色分量，因为ambient绝大多数情况等于diffuse颜色
-```C++
+```c++
 struct Material
 {
     sampler2D diffuse;
@@ -28,13 +28,13 @@ in vec2 TexCoords;
 **如果你非把ambient颜色设置为不同的值不可（不同于diffuse值），你可以继续保留ambient的vec3，但是整个物体的ambient颜色会继续保持不变。为了使每个原始像素得到不同ambient值，你需要对ambient值单独使用另一个纹理。**
 
 2.替换原来的diffuse和amibient颜色值
-```C++
+```c++
 vec3 ambient = light.ambient * vec3(texture(material.diffuse, TexCoords));
 vec3 diffuse = light.diffuse * diff * vec3(texture(material.diffuse, TexCoords));
 ```
 
 3.在顶点着色器中添加纹理坐标
-```C++
+```c++
 #version 330 core
 layout (location = 0) in vec3 position;
 layout (location = 1) in vec3 normal;
@@ -50,7 +50,7 @@ void main()
 ```
 
 4.更新材质中的diffuse纹理
-```C++
+```c++
 glUniform1i(glGetUniformLocation(lightingShader.getProgram(), "material.diffuse"), 0);
 ...
 glActiveTexture(GL_TEXTURE0);
@@ -67,7 +67,7 @@ glBindTexture(GL_TEXTURE_2D, diffuseMap);
 
 ## 镜面贴图采样
 1.更新材质中的镜面属性，并绑定纹理到镜面中
-```C++
+```c++
 struct Material
 {
     sampler2D diffuse;
@@ -75,14 +75,14 @@ struct Material
     float shininess;
 };
 ```
-```C++
+```c++
 glUniform1i(glGetUniformLocation(lightingShader.getProgram(), "material.specular"), 1);
 ...
 glActiveTexture(GL_TEXTURE1);
 glBindTexture(GL_TEXTURE_2D, specularMap);
 ```
 2.更新片段着色器的镜面光照
-```C++
+```c++
 vec3 ambient = light.ambient * vec3(texture(material.diffuse, TexCoords));
 vec3 diffuse = light.diffuse * diff * vec3(texture(material.diffuse, TexCoords));
 vec3 specular = light.specular * spec * vec3(texture(material.specular, TexCoords));

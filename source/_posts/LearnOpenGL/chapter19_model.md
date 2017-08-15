@@ -8,7 +8,7 @@ category: LearnOpenGL
 
 ## 封装模型类
 一个模型包含多个网格(Mesh)，一个网格可能带有多个对象。
-```C++
+```c++
 class Model
 {
 public:
@@ -27,7 +27,7 @@ private:
 };
 ```
 draw渲染，调用网格的draw函数
-```C++
+```c++
 void Model::draw(const Shader & shader)
 {
 	for (auto& mesh : _meshes)
@@ -36,13 +36,13 @@ void Model::draw(const Shader & shader)
 ```
 ## 导入3D模型到OpenGL
 1.使用Assimp的头文件
-```C++
+```c++
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 ```
 2.加载模型
-```C++
+```c++
 void Model::loadModel(const std::string & path)
 {
 	Importer import;
@@ -63,7 +63,7 @@ void Model::loadModel(const std::string & path)
 * aiProcess_OptimizeMeshes:和上个选项相反，它把几个网格结合为一个更大的网格。以减少绘制函数调用的次数的方式来优化。
 
 3.遍历node，得到所有网格数据
-```C++
+```c++
 void Model::processNode(aiNode * node, const aiScene * scene)
 {
 	for (GLuint i = 0; i < node->mNumMeshes; i++)
@@ -85,7 +85,7 @@ void Model::processNode(aiNode * node, const aiScene * scene)
 
 4.从Assimp的网格数据中，取出顶点数据，索引数据，纹理数据
 获取顶点数据
-```C++
+```c++
 for (GLuint i = 0; i < mesh->mNumVertices; i++)
 {
 	Vertex vertex;
@@ -109,7 +109,7 @@ for (GLuint i = 0; i < mesh->mNumVertices; i++)
 }
 ```
 获取索引数据
-```C++
+```c++
 for (GLuint i = 0; i < mesh->mNumFaces; i++)
 {
 	aiFace* face = &(mesh->mFaces[i]);
@@ -120,7 +120,7 @@ for (GLuint i = 0; i < mesh->mNumFaces; i++)
 }
 ```
 根据材质获取纹理数据
-```C++
+```c++
 if (mesh->mMaterialIndex >= 0)
 {
 	aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
@@ -130,7 +130,7 @@ if (mesh->mMaterialIndex >= 0)
 	textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
 }
 ```
-```C++
+```c++
 std::vector<Texture> Model::loadMaterialTextures(aiMaterial * mat, aiTextureType type, const std::string & typeName)
 {
 	vector<Texture> textures;
@@ -164,7 +164,7 @@ std::vector<Texture> Model::loadMaterialTextures(aiMaterial * mat, aiTextureType
 * _loadedTextures是为了防止创建已经创建过的纹理
 
 使用Soil加载图片
-```C++
+```c++
 GLint Model::TextureFromFile(const char * path, const std::string & directory)
 {
 	string filename = directory + "/" + path;

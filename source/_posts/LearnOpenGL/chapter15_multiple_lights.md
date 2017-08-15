@@ -8,7 +8,7 @@ category: LearnOpenGL
 
 使用多光源完成1个平行光(Directional light)和4个点光源(Point lights)以及一个手电筒(Flashlight)
 多光源的代码结构:
-```C++
+```c++
 out vec4 color;
 
 void main()
@@ -25,7 +25,7 @@ void main()
 ```
 ## 平行光
 1.封装平行光
-```C++
+```c++
 struct DirectionLight
 {
 	vec3 direction;
@@ -35,7 +35,7 @@ struct DirectionLight
 };
 ```
 2.计算平行光的输出颜色
-```C++
+```c++
 vec3 calcDirectionLight(DirectionLight light, vec3 normal, vec3 viewDir)
 {
 	vec3 lightDir = normalize(-light.direction);
@@ -52,7 +52,7 @@ vec3 calcDirectionLight(DirectionLight light, vec3 normal, vec3 viewDir)
 ```
 ## 点光源
 1.封装点光源
-```C++
+```c++
 struct PointLight
 {
 	vec3 position;
@@ -65,7 +65,7 @@ struct PointLight
 };
 ```
 2.计算点光源的输出颜色
-```C++
+```c++
 vec3 calcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
 {
 	vec3 lightDir = normalize(light.position - fragPos);
@@ -89,7 +89,7 @@ vec3 calcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
 ```
 ## 手电筒
 1.封装聚光
-```C++
+```c++
 struct SpotLight
 {
 	vec3 position;
@@ -105,7 +105,7 @@ struct SpotLight
 };
 ```
 2.计算聚光输出颜色
-```C++
+```c++
 vec3 calcSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
 {
 	vec3 lightDir = normalize(light.position - fragPos);
@@ -136,7 +136,7 @@ vec3 calcSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
 }
 ```
 ## 放在一起
-```C++
+```c++
 void main()
 {
 	vec3 norm = normalize(Normal);
@@ -153,7 +153,7 @@ void main()
 };
 ```
 1.给点光源一个位置
-```C++
+```c++
 vec3 pointLightPositions[] = {
     vec3( 0.7f,  0.2f,  2.0f),
     vec3( 2.3f, -3.3f, -4.0f),
@@ -162,7 +162,7 @@ vec3 pointLightPositions[] = {
 };  
 ```
 2.对多光源进行赋值
-```C++
+```c++
 glUniform3f(glGetUniformLocation(lightingShader.getProgram(), "directionLight.direction"), -0.2f, -1.0f, -0.3f);
 glUniform3f(glGetUniformLocation(lightingShader.getProgram(), "directionLight.ambient"), 0.05f, 0.05f, 0.05f);
 glUniform3f(glGetUniformLocation(lightingShader.getProgram(), "directionLight.diffuse"), 0.4f, 0.4f, 0.4f);

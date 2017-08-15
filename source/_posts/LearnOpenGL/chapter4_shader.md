@@ -8,7 +8,7 @@ category: LearnOpenGL
 
 ## GLSL
 1.着色器使用GLSL语言编写,代码结构如下
-```C++
+```c++
 #version version_number
 
 in type in_variable_name;
@@ -28,7 +28,7 @@ int main()
 ```
 
 2.顶点着色器中,每个输入变量叫做顶点属性(Vertex Attribute),使用GL_MAX_VERTEX_ATTRIBS查询支持的顶点属性上限
-```C++
+```c++
 GLint nrAttributes;
 glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nrAttributes);
 std::cout << "Maximum nr of vertex attributes supported: " << nrAttributes << std::endl;
@@ -42,14 +42,14 @@ std::cout << "Maximum nr of vertex attributes supported: " << nrAttributes << st
 ![](vec.png)
 
 2.重组(Swizzling)
-```C++
+```c++
 vec2 someVec;
 vec4 differentVec = someVec.xyxx;
 vec3 anotherVec = differentVec.zyw;
 vec4 otherVec = someVec.xxxx + anotherVec.yxzy;
 ```
 
-```C++
+```c++
 vec2 vect = vec2(0.5f, 0.7f);
 vec4 result = vec4(vect, 0.0f, 0.0f);
 vec4 otherResult = vec4(result.xyz, 1.0f);
@@ -60,7 +60,7 @@ vec4 otherResult = vec4(result.xyz, 1.0f);
 2.uniform是全局的,在着色器对象中是唯一的
 3.可以被着色器程序的任意着色器在任意阶段访问
 4.unifrom可以保存数据,除非被重置或更新
-```C++
+```c++
 #version 330 core
 out vec4 color;
 
@@ -76,7 +76,7 @@ void main()
 **如果你声明了一个uniform却在GLSL代码中没用过，编译器会静默移除这个变量，导致最后编译出的版本中并不会包含它，这可能导致几个非常麻烦的错误，记住这点！**
 
 5.使用uniform,动态改变三角形颜色
-```C++
+```c++
 GLfloat timeValue = glfwGetTime();
 GLfloat greenValue = (sin(timeValue) / 2) + 0.5;
 GLint vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
@@ -85,7 +85,7 @@ glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
 ```
 
 整体渲染例子:
-```C++
+```c++
 while(!glfwWindowShouldClose(window))
 {
     // 检测并调用事件
@@ -114,7 +114,7 @@ while(!glfwWindowShouldClose(window))
 
 ## 更多属性！
 1.在VBO中添加颜色顶点属性
-```C++
+```c++
 GLfloat vertices[] = {
     // 位置              // 颜色
      0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,   // 右下
@@ -124,7 +124,7 @@ GLfloat vertices[] = {
 ```
 
 2.在顶点着色器中添加颜色输入
-```C++
+```c++
 #version 330 core
 layout (location = 0) in vec3 position; // 位置变量的属性位置值为 0 
 layout (location = 1) in vec3 color;    // 颜色变量的属性位置值为 1
@@ -139,7 +139,7 @@ void main()
 ```
 
 3.片段着色器使用顶点着色器的颜色输出
-```C++
+```c++
 #version 330 core
 in vec3 ourColor;
 out vec4 color;
@@ -154,7 +154,7 @@ void main()
 ![](vertex_attribute_pointer_interleaved.png)
 
 5.使用glVertexAttribPointer更新顶点格式,因为添加了颜色顶点属性,所以要更新步长值为6
-```C++
+```c++
 // 位置属性
 glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)0);
 glEnableVertexAttribArray(0);
@@ -165,7 +165,7 @@ glEnableVertexAttribArray(1);
 ![](color_vertex_attribute.png)
 
 ## 自己的着色器类
-```C++
+```c++
 #ifndef _SHADER_H_
 #define _SHADER_H_
 
@@ -190,7 +190,7 @@ private:
 ```
 
 ## 从文件读取
-```C++
+```c++
 Shader::Shader(const GLchar * vertexPath, const GLchar * fragmentPath)
 :_program(0)
 {
@@ -223,7 +223,7 @@ Shader::Shader(const GLchar * vertexPath, const GLchar * fragmentPath)
 ```
 
 使用例子:
-```C++
+```c++
 	Shader shader("shaders/shader.vs", "shaders/shader.frag");
 	
 	GLfloat vertices[] = {

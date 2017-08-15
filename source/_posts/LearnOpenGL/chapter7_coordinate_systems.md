@@ -17,7 +17,7 @@ category: LearnOpenGL
 1.正射投影矩阵定义了一个立方体的平截头体
 ![](orthographic_frustum.png)
 2.使用glm创建一个正射投影矩阵
-```C++
+```c++
 glm::ortho(0.0f, 800.0f, 0.0f, 600.0f, 0.1f, 100.0f);
 ```
 前两个参数指定了平截头体的左右坐标，第三和第四参数指定了平截头体的底部和上部，最后2个参数指定近平面和远平面
@@ -28,7 +28,7 @@ glm::ortho(0.0f, 800.0f, 0.0f, 600.0f, 0.1f, 100.0f);
 2.投影矩阵会修改每个顶点的W分量，使得离观察者越远的坐标w分量越大,具体投影矩阵计算在这篇[文章](http://www.songho.ca/opengl/gl_projectionmatrix.html)
 ![](projection_w.png)
 3.使用glm创建一个透视矩阵
-```C++
+```c++
 glm::mat4 proj = glm::perspective(45.0f, (float)width/(float)height, 0.1f, 100.0f);
 ```
 第一个参数指定**视野(Field of View)**
@@ -47,26 +47,26 @@ glm::mat4 proj = glm::perspective(45.0f, (float)width/(float)height, 0.1f, 100.0
 
 ## 进入3D
 1.创建模型矩阵
-```C++
+```c++
 glm::mat4 model;
 model = glm::rotate(model, -55.0f, glm::vec3(1.0f, 0.0f, 0.0f));
 ```
 
 2.创建观察矩阵
-```C++
+```c++
 glm::mat4 view;
 // 注意，我们将矩阵向我们要进行移动场景的反向移动。
 view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f)); 
 ```
 
 3.创建投影矩阵
-```C++
+```c++
 glm::mat4 projection;
 projection = glm::perspective(45.0f, screenWidth / screenHeight, 0.1f, 100.0f);
 ```
 
 4.修改顶点着色器
-```C++
+```c++
 #version 330 core
 layout (location = 0) in vec3 position;
 ...
@@ -83,7 +83,7 @@ void main()
 ```
 
 5.给矩阵赋值
-```C++
+```c++
 GLuint modelLoc = glGetUniformLocation(shader.getProgram(), "model");
 glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 [...]
@@ -92,7 +92,7 @@ glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 
 ## 更多的3D
 1.创建一个立方体
-```C++
+```c++
 float vertices[] = {
 	-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
 	0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
@@ -141,7 +141,7 @@ glDrawArrays(GL_TRIANGLES, 0, 36);
 ```
 
 2.随时间变化旋转
-```C++
+```c++
 model = glm::rotate(model, (GLfloat)glfwGetTime() * 50.0f, glm::vec3(0.5f, 1.0f, 0.0f));
 ```
 ![](easy_rotate_with_time.png)
@@ -151,18 +151,18 @@ model = glm::rotate(model, (GLfloat)glfwGetTime() * 50.0f, glm::vec3(0.5f, 1.0f,
 2.z缓冲(也叫深度缓冲区(Depth Buffer))，保存深度信息
 3.深度存储在每个片段中(z值),跟z缓冲进行对比，如果当前片段在其他片段之后，会被丢弃
 4.开启深度测试
-```C++
+```c++
 glEnable(GL_DEPTH_TEST);
 ```
 5.渲染前清除深度缓冲区(否则前一个片段的深度信息仍然保存在缓冲区中)
-```C++
+```c++
 glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 ```
 ![](easy_rotate_with_depth_test.png)
 
 ### 更多立方体
 1.定义10个立方体
-```C++
+```c++
 glm::vec3 cubePositions[] = {
   glm::vec3( 0.0f,  0.0f,  0.0f), 
   glm::vec3( 2.0f,  5.0f, -15.0f), 
@@ -178,7 +178,7 @@ glm::vec3 cubePositions[] = {
 ```
 
 2.改变不同角度,位置
-```C++
+```c++
 for (GLuint i = 0; i < 10; i++)
 {
 	glm::mat4 model;

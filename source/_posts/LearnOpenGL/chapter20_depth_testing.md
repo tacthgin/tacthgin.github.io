@@ -12,21 +12,21 @@ category: LearnOpenGL
 开启深度测试后，如果测试通过，深度缓冲的值会被设置成新的深度值，测试失败，就丢弃该片段。
 
 1.使用GL_DEPTH_TEST打开深度测试
-```C++
+```c++
 glEnable(GL_DEPTH_TEST);
 ```
 2.清除深度缓冲区，不然将保留上一次深度测试的深度值
-```C++
+```c++
 glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 ```
 3.禁用深度缓冲写入，只在深度测试被开启有效
-```C++
+```c++
 glDepthMask(GL_FLASE)
 ```
 
 ## 深度测试函数
 1.设置glDepthFunc设置比较运算符
-```C++
+```c++
 glDepthFunc(GL_LESS);
 ```
 ![](comparison_operator.png)
@@ -51,7 +51,7 @@ GL_LESS:
 
 ## 深度缓冲区的可视化
 1.对片段着色器输出片段z值
-```C++
+```c++
 void main()
 {
     color = vec4(vec3(gl_FragCoord.z), 1.0f);
@@ -61,17 +61,17 @@ void main()
 ![](depth_testing_visible_depth.png)
 3.如果让深度值变回线性，需要让点应用投影变换逆的逆变换(很拗口，我不知道他在讲什么)，成为单独的深度值
 进行NDC深度值转换：
-```C++
+```c++
 float z = depth * 2.0 - 1.0;
 ```
 z值应用逆转换来检索的线性深度值:
-```C++
+```c++
 float linearDepth = (2.0 * near) / (far + near - z * (far - near))
 ```
 这篇[文章](http://www.songho.ca/opengl/gl_projectionmatrix.html)阐述了大量详细的投影矩阵的知识;它还表明了方程是从哪里来的。
 
 能够将屏幕空间的非线性深度值转变为线性深度值的完整的片段着色器如下所示：
-```C++
+```c++
 #version 330 core
 
 out vec4 color;

@@ -44,7 +44,7 @@ category: LearnOpenGL
 
 2.顶点数据会作为输入发送给顶点着色器，它会在GPU上创建内存存储顶点数据，并操作。
 创建三角形的顶点数据：
-```C++
+```c++
 GLfloat vertices[] = {
     -0.5f, -0.5f, 0.0f,
      0.5f, -0.5f, 0.0f,
@@ -58,18 +58,18 @@ GLfloat vertices[] = {
 **从CPU把数据发送到显卡相对较慢，把大量顶点发送到GPU内存后，顶点着色器几乎能立即访问顶点，这是个非常快的过程。**
 
 3.生成VBO
-```C++
+```c++
 GLuint VBO;
 glGenBuffers(1, &VBO); 
 ```
 
 4.顶点缓冲对象类型是GL_ARRAY_BUFFER，绑定VBO
-```C++
+```c++
 glBindBuffer(GL_ARRAY_BUFFER, VBO);
 ```
 
 5.传输顶点数据
-```C++
+```c++
 glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 ```
 第四个参数指定了我们希望显卡如何管理给定的数据。它有三种形式：
@@ -97,19 +97,19 @@ void main()
 
 ## 编译着色器
 1.创建着色器
-```C++
+```c++
 GLuint vertexShader;
 vertexShader = glCreateShader(GL_VERTEX_SHADER);
 ```
 
 2.加载着色器并编译
-```C++
+```c++
 glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
 glCompileShader(vertexShader);
 ```
 
 3.打印着色器结果日志
-```C++
+```c++
 GLint success;
 GLchar infoLog[512];
 glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
@@ -134,7 +134,7 @@ void main()
 ```
 
 2.创建片段着色器的过程跟顶点着色器差不多，不过创建类型是GL_FRAGMENT_SHADER
-```C++
+```c++
 GLuint fragmentShader;
 fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
 ```
@@ -143,20 +143,20 @@ fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
 1.编译后的着色器会被链接到着色器程序，渲染对象的时候激活
 2.着色器的输入和输出不匹配，就会出现链接错误
 3.创建着色器程序
-```C++
+```c++
 GLuint shaderProgram;
 shaderProgram = glCreateProgram();
 ```
 
 4.链接着色器
-```C++
+```c++
 glAttachShader(shaderProgram, vertexShader);
 glAttachShader(shaderProgram, fragmentShader);
 glLinkProgram(shaderProgram);
 ```
 
 5.打印日志
-```C++
+```c++
 glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
 if(!success) {
     glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
@@ -165,12 +165,12 @@ if(!success) {
 ```
 
 6.使用着色器程序对象
-```C++
+```c++
 glUseProgram(shaderProgram);
 ```
 
 7.释放着色器对象
-```C++
+```c++
 glDeleteShader(vertexShader);
 glDeleteShader(fragmentShader);
 ```
@@ -184,7 +184,7 @@ glDeleteShader(fragmentShader);
 * 数据中第一个值在缓冲开始的位置。
 
 2.使用glVertexAttribPointer解析顶点数据
-```C++
+```c++
 glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
 glEnableVertexAttribArray(0);
 ```
@@ -198,7 +198,7 @@ glEnableVertexAttribArray(0);
 **每个顶点属性从VBO获取数据，决定从哪个VBO读取根据绑定到GL_ARRAY_BUFFER的VBO**
 
 3.在OpenGL绘制一个物体:
-```C++
+```c++
 // 0. 复制顶点数组到缓冲中供OpenGL使用
 glBindBuffer(GL_ARRAY_BUFFER, VBO);
 glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
@@ -219,13 +219,13 @@ someOpenGLFunctionThatDrawsOurTriangle();
 ![](vertex_attribute_pointer.png)
 
 3.创建VAO
-```C++
+```c++
 GLuint VAO;
 glGenVertexArrays(1, &VAO); 
 ```
 
 4.使用VAO
-```C++
+```c++
 // ..:: 初始化代码（只运行一次 (除非你的物体频繁改变)） :: ..
 // 1. 绑定VAO
 glBindVertexArray(VAO);
@@ -253,7 +253,7 @@ glBindVertexArray(0);
 **用到的时候再绑定，避免出现误导**
 
 ### 画出第一个三角形
-```C++
+```c++
 glUseProgram(shaderProgram);
 glBindVertexArray(VAO);
 glDrawArrays(GL_TRIANGLES, 0, 3);
@@ -264,7 +264,7 @@ glBindVertexArray(0);
 
 ## 索引缓冲对象(Element Buffer Object，EBO，也叫Index Buffer Object，IBO)
 1.如果画一个矩形，或者更多三角形的时候，防止顶点重复
-```C++
+```c++
 GLfloat vertices[] = {
     // 第一个三角形
     0.5f, 0.5f, 0.0f,   // 右上角
@@ -278,7 +278,7 @@ GLfloat vertices[] = {
 ```
 
 2.使用索引缓冲来绘制(Indexed Drawing)
-```C++
+```c++
 GLfloat vertices[] = {
     0.5f, 0.5f, 0.0f,   // 右上角
     0.5f, -0.5f, 0.0f,  // 右下角
@@ -293,13 +293,13 @@ GLuint indices[] = { // 注意索引从0开始!
 ```
 
 3.创建IBO
-```C++
+```c++
 GLuint IBO;
 glGenBuffers(1, &IBO);
 ```
 
 4.使用IBO
-```C++
+```c++
 glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
 glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW); 
 glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
@@ -311,7 +311,7 @@ glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 **索引缓冲对象时候，不需要自己解绑**
 
 5.使用IBO画图
-```C++
+```c++
 // ..:: 初始化代码 :: ..
 // 1. 绑定顶点数组对象
 glBindVertexArray(VAO);
