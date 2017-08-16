@@ -5,6 +5,7 @@ tags:
     C++11
 category: C++11
 ---
+
 * long long整形最低64位
 * static_assert提供在编译期断言
 * final防止函数被子类重写。
