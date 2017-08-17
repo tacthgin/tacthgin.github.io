@@ -48,3 +48,77 @@ struct C : A, B
     C(int) {}
 };
 ```
+
+## 委托构造函数
+委托构造函数目的是减少程序员的书写构造函数的时间。
+example：
+```c++
+class Info
+{
+public:
+    Info() { initRest(); }
+    Info(int i) : type(i) { initRest(); }
+    Info(char e) : name(e) { initRest(); }
+private:
+    void initRest() { /*其他初始化*/ }
+    int type {1};
+    char name {'a'};
+};
+```
+使用委托构造函数后:
+```c++
+class Info
+{
+public:
+    Info() { initRest(); }
+    Info(int i) : Info() { type = i; }
+    Info(char e) : Info() { name = e; }
+private:
+    void initRest() { /*其他初始化*/ }
+    int type {1};
+    char name {'a'};
+};
+```
+**Tip:**
+**可以使用黑科技， 用placement new来实现在构造函数中调用构造函数**
+```c++
+Info(int i) { new (this) Info(); type = i;}
+```
+委托构造函数不能与初始化列表一起使用：
+```c++
+class Info
+{
+public:
+    
+    Info(int i) : type(i) {}
+    Info(): Info(40), i(1) {} // 无法通过编译
+private:
+    int type {1};
+};
+```
+避免形成委托环(delegation cycle):
+```c++
+class Info
+{
+public:
+    Info():Info(1) {}
+    Info(int i) : Info('a') {}
+    Info(char e) : Info(1) {}
+private:
+    int type {1};
+    char name {'a'};
+};
+```
+委托构造函数比较实用的应用就是使用构造模板函数产生目标构造函数
+```c++
+class TDContructed
+{
+    template<class T> TDContructed(T first, T last) : l(first, last) {}
+    list<int> l;
+public:
+    TDContructed(vector<short>& v) : TDContructed(v.begin(), v.end()) {}
+    TDContructed(deque<int>& d) : TDContructed(d.begin(), d.end()) {}
+}
+```
+**Tip:**
+**目标构造函数抛出的异常可以在委托构造函数中捕获到**
