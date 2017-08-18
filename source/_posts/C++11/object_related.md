@@ -175,3 +175,16 @@ Copyable s;
 Copyable news = s; //调用拷贝构造
 Copyable news = std::move(s); //调用移动构造
 ```
+使用is_move_constructible、is_trivially_move_constructible、is_nothrow_move_constructible来判断一个类型是否是可以移动的。
+```c++
+cout << is_move_constructible<T>::value;
+```
+#### 完美转发
+完美转发(perfect forwarding)，是指在函数模板中，完全依照模板的参数的类型，将参数传递给函数模板中调用的另外一个函数：
+```c++
+template <typename T>
+void IamForwording(T t)
+{
+    IrunCodeActually(t);
+}
+```
