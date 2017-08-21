@@ -183,8 +183,27 @@ cout << is_move_constructible<T>::value;
 完美转发(perfect forwarding)，是指在函数模板中，完全依照模板的参数的类型，将参数传递给函数模板中调用的另外一个函数：
 ```c++
 template <typename T>
-void IamForwording(T t)
+void IamForwording(T t) //转发函数模板
 {
-    IrunCodeActually(t);
+    IrunCodeActually(t); //真正执行目标代码
 }
 ```
+转发函数将参数按照传入IamForwording时的类型传递(传入的是左值对象，目标函数就能获得左值对象。传入的是右值对象，目标函数就能获得右值对象)，不产生额外的开销。上面的例子会产生拷贝构造，谈不上完美转发。
+
+C++11引入一个"引用折叠"的新语言规则，来实现完美转发。
+![](reference_folding.png)
+可以把转发函数写成如下形式：
+```c++
+template <typename T>
+void IamForwording(T &&t)
+{
+    IrunCodeActually(static_cast<T&&>(t));
+}
+```
+**Tip:**
+**这里的static_cast是用来传递右值的，得出的结果会被转化为右值**
+```c++
+static_cast<T&& &&>
+```
+
+在C++11中，实现完美转发的函数叫做**forward**。虽然std::move也可以用来完美转发，但这并不是推荐的做法（C++11用专门的foward来实现，或者考虑未来拓展）。
