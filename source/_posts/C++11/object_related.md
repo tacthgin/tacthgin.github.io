@@ -207,3 +207,34 @@ static_cast<T&& &&>
 ```
 
 在C++11中，实现完美转发的函数叫做**forward**。虽然std::move也可以用来完美转发，但这并不是推荐的做法（C++11用专门的foward来实现，或者考虑未来拓展）。
+
+#### 显式转换操作符
+C++11将explicit范围扩展到自定义的类型转换操作符上。
+```c++
+template <class T>
+class Ptr
+{
+public:
+    Ptr(T* p):_p(p) {} 
+    operator bool() const
+    {
+        return _p != 0;
+    }
+private:
+    T* _p;
+};
+
+int main()
+{
+    int a;
+    Ptr<int> p(&a); 
+    if(p) //转换为bool类型
+    {
+        cout << "valid pointer" << endl;
+    }
+
+    Ptr<double> pd(0);
+    cout << p + pd << endl; //得到1.相加语义上没有意义，如果添加explicit编译错误
+}
+```
+添加完explicit，if(p)可以通过编译，因为可以通过p直接构造出bool型变量，p + pd无法通过编译是因为全局的operator+不支持bool类型作为参数(之前强转)。
