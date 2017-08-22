@@ -208,7 +208,7 @@ static_cast<T&& &&>
 
 在C++11中，实现完美转发的函数叫做**forward**。虽然std::move也可以用来完美转发，但这并不是推荐的做法（C++11用专门的foward来实现，或者考虑未来拓展）。
 
-#### 显式转换操作符
+### 显式转换操作符
 C++11将explicit范围扩展到自定义的类型转换操作符上。
 ```c++
 template <class T>
@@ -235,6 +235,127 @@ int main()
 
     Ptr<double> pd(0);
     cout << p + pd << endl; //得到1.相加语义上没有意义，如果添加explicit编译错误
+    return 0;
 }
 ```
 添加完explicit，if(p)可以通过编译，因为可以通过p直接构造出bool型变量，p + pd无法通过编译是因为全局的operator+不支持bool类型作为参数(之前强转)。
+
+### 列表初始化
+#### 初始化列表
+C++11添加了集合的初始化，称为"初始化列表"。
+```c++
+#include <vector>
+#include <map>
+using namespace std;
+
+int main()
+{
+    int a[] = {1, 3, 5}; //C++98通过，C++11通过
+    int b[] {2, 4, 6}; //C++98失败，C++11通过
+    vector<int> c{1, 3, 5}; //C++98失败，C++11通过
+    map<int float> d = {{1, 1.0f}, {2, 2.0f}}; //C++98失败，C++11通过
+    return 0;
+}
+```
+C++11支持以下几种初始化方式:
+* 等号 "=" 加上赋值表达式(assignment-expression)，比如int a = 3 + 4。
+* 等号 "=" 加上花括号的初始化列表，比如int a = {3 + 4}。
+* 圆括号的表达式列表(expression-list)，比如int a(3 + 4)。
+* 花括号式的初始化列表，比如int a{3 + 4}。
+
+后2种形式可以用于new操作符：
+```c++
+int *i = new int(1);
+double *d = new double(1.2f);
+```
+C++11中，可以使用<initializer_list>中的initialize_list<T>模板类来使自定义的类使用列表初始化。
+```c++
+#include <vector>
+#include <string>
+
+using namespace std;
+
+enum Gender{boy, girl};
+
+class People
+{
+public:
+    People(initializer_list<pair<string, Gender>> l)
+    {
+        for(auto i = l.begin(); i != l.end(); ++i)
+            _data.push_back(*i);
+    }
+private:
+    vector<pair<string, Gender>> _data;
+};
+
+int main()
+{
+    People ship2012 = {{"Garfield", boy}, {"HelloKitty", girl}};
+    return 0;
+}
+```
+initializer_list在普通的函数和操作符都可以使用:
+```c++
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+class Mydata
+{
+public:
+    Mydata& operator[](initializer_list<int> l)
+    {
+        for(auto i = l.begin(); i != l.end(); ++i)
+        {
+            _idx.push_back(*i);
+        }
+        return *this;
+    }
+    Mydata& operator=(int v)
+    {
+        if(!_idx.empty())
+        {
+            for(auto i = _idx.begin(); i != _idx.end(); ++i)
+            {
+               _data.resize((*i > _data.size()) ? *i : _data.size());
+               _data[*i - 1] = v;
+            }
+
+            _idx.clear();
+        }
+
+        return *this;
+    }
+private:
+    vector<int> _idx;
+    vector<int> _data;
+};
+
+int main()
+{
+    Mydata d;
+    d[{2, 3, 5}] = 7;
+    d[{1, 4, 5, 8}] = 4;
+    return 0;
+}
+```
+#### 防止类型收窄
+类型收窄指的是使得数据变化或者精度丢失的隐式类型转换。
+* 浮点数隐式转化为整型。
+* 高精度的浮点数转化为低精度的浮点数。
+* 整型转化为浮点型(整型大到浮点数无法精确表示)
+* 整型转化为较低长度的整型(unsigned char = 1024)
+
+在C++11中，使用初始化列表会检查是否发生类型收窄：
+```c++
+const int x = 1024;
+const int y = 10;
+
+char a = x; //收窄，可以通过编译
+char *b = new char(1024); //收窄，可以通过编译
+
+char c = {x}; //收窄，无法通过编译
+char d = {y}; //收窄，可以通过编译
+```
