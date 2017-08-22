@@ -359,3 +359,84 @@ char *b = new char(1024); //收窄，可以通过编译
 char c = {x}; //收窄，无法通过编译
 char d = {y}; //收窄，可以通过编译
 ```
+### POD类型
+对于c的那套api兼容就不说了，C++11对POD划分2个基本概念的合集：平凡的(trivial)和标准布局的(standard layout)
+trivial的定义：
+* 拥有trivial constructor和trivial destructor。(不能定义构造函数，编译器会自己生成)
+* 拥有trivial copy constructor和trivial move constructor。
+* 拥有trivial assignment operator和trivial move operator。
+* 不能包含虚函数以及虚基类
+* 如果成员变量拥有no trivial构造，那么这个类就不是trivial(C++对象模型书本看的)
+
+在C++中可以使用类模板来判断是不是trivial:
+```c++
+template<typename T>
+struct std::is_trivial;
+
+is_trivial<T>::value;
+```
+
+标准布局的定义：
+* 所有非静态成员有相同的访问权限(public, private, prtected)
+* 在类或者结构体继承时，满足以下2中情况之一：
+1.派生类中有非静态成员，且只有一个仅包含静态成员的基类。
+2.基类有非静态成员，派生类没有。
+```c++
+struct B1 {static int a;}
+struct D1 : B1 {int d;}
+
+struct B2 {int a;}
+struct D2 : B2 {static int d;}
+
+struct D3 : B2, B1 {static int d}
+struct D4 : B2 {int d;}
+struct D5 : B2, d1{};
+```
+>D1、D2和D3是标准布局，D4、D5不是，说明只要非静态成员同时出现在基类和子类中就不属于标准布局。
+
+* 类中的第一个非静态成员的类型与其基类不同
+```c++
+//不是标准布局
+struct B{};
+
+struct A : B
+{
+    B b;
+}; 
+
+//标准布局
+struct C : B
+{
+    int a;
+    B b;
+};
+```
+>**Tip**
+>**如果基类没有成员，C++11允许派生类的第一个成员与基类共享地址，派生类的地址总是"堆叠"在基类之上，表明基类没有占据任何的实际空间(可以节省点数据)。如果第一个成员仍然是基类，编译器会为基类分配1个字节的空间**
+
+![](fisrt_member_is_base.png)
+
+* 没有虚函数和虚基类
+* 所有非静态数据成员符合标准布局模型，基类也符合标准布局。
+
+标准布局可以使用模板类来判断：
+```c++
+template <typename T>
+struct std::is_standard_layout;
+
+is_standard_layout<T>::value;
+```
+
+对于POD类型来说，C++也可以用模板类来判断：
+```c++
+template <typename T>
+struct std::is_pod;
+
+is_pod<T>::value;
+```
+
+使用POD类型有如下好处：
+* 字节赋值，可以安全的使用memset和memcpy对POD类型进行初始化和拷贝等操作。
+* 提供对C内存布局兼容。C++程序可以与C函数进行相互操作。
+* 保证了静态初始化的安全有效。静态初始化在很多时候能提高程序的性能，而POD类型对象的初始化往往更简单(放入目标文件的.bbs段，在初始化中直接被赋值0)。
+
