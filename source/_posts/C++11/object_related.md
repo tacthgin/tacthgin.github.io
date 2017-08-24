@@ -579,3 +579,26 @@ int main()
 使用自定义字面量应该注意一下几点：
 * 在字面量操作符函数的声明中，operator""与用户自定义后缀之前必须要有空格。
 * 后缀建议以下划线开始，否则会被编译器警告。
+
+### 内联命名空间
+太懒了。。。。
+
+### 模板的别名
+在C++11中可以使用using代替typedef来定义别名。
+```c++
+using uint = unsigned int;
+typedef unsigned int UINT;
+
+int main()
+{
+    cout << is_same<uint, UINT>::value << endl; //1
+    return 0;
+}
+```
+在使用模板变成的时候，using的语法比typedef更加灵活，typedef无法实现这种效果
+```c++
+template<typename T>
+using MapString = std::map<T, char*>;
+
+MapString<int> numberString;
+```
