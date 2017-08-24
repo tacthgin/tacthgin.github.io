@@ -378,7 +378,7 @@ is_trivial<T>::value;
 
 标准布局的定义：
 * 所有非静态成员有相同的访问权限(public, private, prtected)
-* 在类或者结构体继承时，满足以下2中情况之一：
+* 在类或者结构体继承时，满足以下2种情况之一：
 1.派生类中有非静态成员，且只有一个仅包含静态成员的基类。
 2.基类有非静态成员，派生类没有。
 ```c++
@@ -440,3 +440,116 @@ is_pod<T>::value;
 * 提供对C内存布局兼容。C++程序可以与C函数进行相互操作。
 * 保证了静态初始化的安全有效。静态初始化在很多时候能提高程序的性能，而POD类型对象的初始化往往更简单(放入目标文件的.bbs段，在初始化中直接被赋值0)。
 
+### 非受限联合体
+在C++98中，如果一个联合体有一个不是POD类型的类，无法通过编译：
+```c++
+struct A 
+{
+    int a = {1};
+    A() {}
+};
+
+union T
+{
+    A a; //无法通过编译
+    int b;
+};
+```
+经过长期实践应用证明，C++98标准对于联合体的限制是完全没有必要的：
+```c++
+union
+{
+    double d;
+    complex<double> cd; //错误，不是POD类型
+};
+
+union
+{
+    double d;
+    complex c; //c语言的复数通过编译
+};
+```
+由于C++的复数是用模板实现，这样联合体保持和C的兼容就形同虚设。
+
+在C++11标准中，取消了联合体对于数据成员类型的限制，任何非引用类型都可以成为联合体的数据成员，这样的联合体叫做**非受限联合体(Unrestricted Union)**。
+* 不允许静态成员变量的存在(否则该类型的联合体将共享一个值)。
+* 拥有静态成员函数，返回常数。
+* 如果有非POD成员类型，联合体的默认构造函数将被删除，其他的特殊成员函数(默认拷贝构造、拷贝赋值操作符和析构函数)也遵从此规则。
+```c++
+union T
+{
+    string s; //非POD类型
+    int n;
+}
+
+int main()
+{
+    T t; //构造失败，因为T的构造函数被删除了
+    return 0;
+}
+```
+* 解决构造函数被删除的问题是，自己定义非受限联合体的构造函数。使用placement new来调用非POD类型的构造函数。
+```c++
+union T
+{
+    string s;
+    int n;
+public:
+    T() { new (&s) string; }
+    ~T() { s.~string(); }
+}
+
+int main()
+{
+    T t; //构造析构成功
+    return 0;
+}
+```
+>**Tip：**
+**析构的时候union T也必须是一个string对象，否则可能导致析构的错误**
+
+* 匿名非受限联合体可以运用在类的声明中，这样的类被称为**枚举式的类(union-like class)**。
+```c++
+#include <cstring>
+using namespace std;
+
+struct Student
+{
+    Student(bool g, int a) : gender(g), age(a) {}
+    bool gender;
+    int age;
+};
+
+class Singer
+{
+public:
+    enum Type{ STUDENT, NATIVE, FOREIGNER};
+
+    Singer(bool g, int a) : s(g, a) { t = STUDENT;}
+    Singer(int i) : id(i) { t = NATIVE;}
+    Singer(const char* n, int s)
+    {
+        int size = (s > 9) ? 9 : s;
+        memcpy(name, n, size);
+        name[s] = "\0";
+        t = FOREIGNER;
+    }
+private:
+    Type t;
+    union //匿名的非受限联合体
+    {
+        Student s;
+        int id;
+        char name[10];
+    };
+};
+
+int main()
+{
+    Singer(true, 13);
+    Singer(310217);
+    Singer("Hello world", 9);
+    return 0;
+}
+```
+>非受限联合体成为类Singer的**变长成员(variant member)**。
