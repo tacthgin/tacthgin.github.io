@@ -553,3 +553,29 @@ int main()
 }
 ```
 >非受限联合体成为类Singer的**变长成员(variant member)**。
+
+### 用户自定义字面量
+C++11允许制定一个后缀标识的操作符，来实现自定义的类型。比如120W，200N这种物理单位：
+```c++
+struct Watt{ unsigned int v;}
+
+Watt operator "" _w(unsigned long long v)
+{
+    return {(unsigned int) v};
+}
+
+int main()
+{
+    Watt capacity = 1024_w;
+    return 0;
+}
+```
+在C++11中，标准要求声明字面量操作符有一定的规则：
+* 如果字面量为整型数，那么字面量操作符函数参数只可接受unsigned long long或者const char\* 为其参数。当unsigned long long无法容纳该字面量的时候，编译器会自动将该字面量转化为以\0为结束符的字符串，并调用const char\* 为参数的版本进行处理。
+* 如果字面量为浮点型数，则字面量操作符函数参数只可接受long double或者const char\* 为其参数。调用规则同整型数一样。
+* 如果字面量为字符串，则字面量操作符函数参数只可接受const char\*， size_t为其参数(已知长度的字符串)。
+* 如果字面量为字符，则字面量操作符函数参数只可接受一个char作为参数。
+
+使用自定义字面量应该注意一下几点：
+* 在字面量操作符函数的声明中，operator""与用户自定义后缀之前必须要有空格。
+* 后缀建议以下划线开始，否则会被编译器警告。
