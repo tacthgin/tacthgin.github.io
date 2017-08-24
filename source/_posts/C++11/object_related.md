@@ -581,7 +581,8 @@ int main()
 * 后缀建议以下划线开始，否则会被编译器警告。
 
 ### 内联命名空间
-太懒了。。。。
+内联的名字空间允许在父名字空间定义或特化子名字空间的模板。
+PS:太懒了。。。。
 
 ### 模板的别名
 在C++11中可以使用using代替typedef来定义别名。
@@ -601,4 +602,26 @@ template<typename T>
 using MapString = std::map<T, char*>;
 
 MapString<int> numberString;
+```
+
+### 一般化的SFINEA规则
+**SFINEA-Substitution failure is not an error**(匹配失败不是错误),更确切的说，这条规则表示的是对重载的模板的参数进行展开的时候，如果展开导致了一些类型不匹配，编译器并不会报错。
+```c++
+struct Test
+{
+    typedef int foo;
+};
+
+template <typename T>
+void f(typename T::foo) {} //模板定义#1
+
+template <typename T>
+void f(T) {} //模板定义#2
+
+int main()
+{
+    f<Test>(10); //调用#1
+    f<int>(10); //调用#2 由于SFINEA，虽然不存在类型int::foo，也不会发生编译错误
+    return 0;
+}
 ```
