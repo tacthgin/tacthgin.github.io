@@ -207,3 +207,107 @@ int main()
 }
 ```
 >虽然人为的观察很容易推导出auto所在位置的类型，但是C++11标准还没有支持这样的使用方式。
+
+## decltype
+### typeid与decltype
+C++在C++98中就部分支持动态类型了(RTTI)，RTTI的机制是为每个类型产生一个type_info类型的数据，可以在程序中使用typeid查询一个变量的类型。typeid会返回变量的type_info数据。type_info的name成员函数返回类型的名字，C++11增加了hash_code这个函数，返回该类型唯一的哈希值。
+```c++
+#include <iostream>
+#include <typeinfo>
+
+using namespace std;
+
+class White {};
+class Black {};
+
+int main()
+{
+    White a;
+    Black b;
+
+    cout << typeid(a).name() << endl; //class White
+    cout << typeid(b).name() << endl; //class Black
+
+    bool sameType = typeid(a).hash_code() == typeid(b).hash_code();
+    cout << "a and b ? " << sameType << endl; //0
+
+    White c;
+    sameType = typeid(a).hash_code() == typeid(c).hash_code();
+    cout << "a and c ? " << sameType << endl; //1
+
+    return 0;
+}
+```
+除了typeid，RTTI还包括了C++中的dynamic_cast等特性。不过RTTI会带来一些运行时的开销，所以编译器会让用户选择性的关闭该特性(GCC的选项-fno-rttion，微软编译器/GR-)
+
+在C++的发展中，类型推导式随着模板和泛型编程的广泛使用而引入的。在上面的auto例子中：
+```c++
+template <typename T1, typename T2>
+double sum(T1 &t1, T2 &t2)
+{
+    auto s = t1 + t2; //s的类型会在模板实例化时被推导出来
+    return s;
+}
+```
+t1 + t2的返回值是不确定类型的，这种写法会限制模板的使用范围和编写方式。C++11制定了auto和decltype，decltype也可以进行类型推导，不过两者的使用方式有一定的区别。
+```c++
+int main()
+{
+    int i;
+    decltype(i) j = 0;
+    cout << typeid(j).name() << endl; //int
+
+    float a;
+    double b;
+    decltype(a + b) c;
+    cout << typeid(c).name() << endl; //double
+
+    return 0;
+}
+```
+decltype总是一个普通的表达式作为参数，返回该表达式的类型。与auto相同，decltype类型推导也是在编译时进行的。
+
+### decltype的应用
+* 配合using/typedef使用，在C++11的头文件经常看到下列代码：
+```c++
+using size_t = decltype(sizeof(0));
+using ptrdiff_t = decltype((int*)0 - (int*)0);
+using nullptr_t = decltype(nullptr);
+```
+* 增加可读性
+```c++
+int main()
+{
+    vector<int> vec;
+    typedef decltype(vec.begin()) vectype;
+    for(vectype i = vec.begin(); i != vec.end(); ++i)
+    {
+        // 一些代码
+    }
+
+    for(decltype(vec)::iterator i = vec.begin(); i != vec.end(); ++i)
+    {
+        // 一些代码
+    }
+
+    return 0;
+}
+```
+* 使用匿名类型
+```c++
+enum class{K1, K2, K3}anon_e; //匿名的强类型枚举
+
+union 
+{
+    decltype(anon_e) key;
+    char* name;
+}anon_u;
+```
+* 扩大模板泛型的能力,改造auto例子的模板相加
+```c++
+template <typename T1, typename T2>
+void sum(T1 &t1, T2 &t2, decltype(t1 + t2) &s)
+{
+    s = t1 + t2;
+}
+```
