@@ -438,4 +438,18 @@ auto Fowrad(T t) -> decltype(foo(t))
     return foo(t);
 }
 ```
+## 基于范围的for循环
+```c++
+int arr[5] = {1, 2, 3, 4, 5};
 
+for(int i = 0; i < 5; i++) //C++98
+{
+    //一些代码
+}
+
+for(auto &i : arr)
+{
+    //一些代码
+}
+```
+**PS:比较简单就不详细说了，数组的范围必须确定，不然代码就会报错**
