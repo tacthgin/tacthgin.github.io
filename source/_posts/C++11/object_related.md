@@ -596,7 +596,7 @@ int main()
     return 0;
 }
 ```
-在使用模板变成的时候，using的语法比typedef更加灵活，typedef无法实现这种效果
+在使用模板编程的时候，using的语法比typedef更加灵活，typedef无法实现这种效果
 ```c++
 template<typename T>
 using MapString = std::map<T, char*>;

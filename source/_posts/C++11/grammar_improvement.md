@@ -311,3 +311,131 @@ void sum(T1 &t1, T2 &t2, decltype(t1 + t2) &s)
     s = t1 + t2;
 }
 ```
+>**Tip:**
+>**函数的参数是从右到左入栈的，入栈前会把表达式参数算一遍**
+
+* C++11标准也会依赖decltype的类型推导(result_of推导函数的返回类型)
+```c++
+typedef double (*func)();
+
+int main()
+{
+    result_of<func()>::type f; 
+    cout << typeid(f).name() << endl; //double
+    return 0;
+}
+```
+### decltype推导四规则
+如果程序员使用decltype(e)来获取类型时：
+* 如果e是一个没有带括号的标记符表达式(id-expression)或者类成员访问表达式，那么decltype(e)就是e所命名的实体的类型。此外，如果e是一个被重载的函数，则会导致编译时错误。
+* 否则，假设e的类型是T，如果e是一个将亡值(xvalue)，那么decltype(e)为T&&。
+* 否则，假设e的类型是T，如果e是一个左值，则decltype(e)为T&。
+* 否则，假设e的类型是T，则decltype(e)为T。
+```c++
+struct A
+{
+
+};
+
+int main()
+{
+    int i = 0;
+    decltype(i) j = 0; //int，规则1
+    decltype((i)) k = i; //int&，(i)是左值表达式(可以有具名的地址)，规则3
+
+    A a;
+    cout << is_rvalue_reference<decltype(move(a))>::value << endl; //int&&， 1，move(a)是将亡值，规则2
+
+    decltype(++i) b = i; // ++i返回i的左值，规则3
+    decltype(i++) c; //int，i++返回右值，规则4
+
+    return 0;
+}
+```
+
+### cv限制符的继承和冗余的符号
+* 与auto类型推导不能带走cv限制符不同，decltype能带走表达式的cv限制符。如果对象的定义中有const或volatile限制符，使用decltype进行推导时，成员不会继承const或volatile限制符。
+```c++
+int main()
+{
+    const int ic = 0;
+    volatile int iv;
+
+    cout << is_const<decltype(ic)>::value << endl; //1
+    cout << is_volatile<decltype(iv)>::value << endl; //1
+
+    return 0;
+}
+```
+* 与auto相同，decltype从表达式推导出类型后，进行类型定义时，也会允许一些冗余的符号。比如cv限制符和引用符号&。如果推导出的类型已经有了这些符号，冗余的符号则会被忽略。
+```c++
+int mian()
+{
+    int i = 1;
+    int &j = i;
+    int *p = &i;
+
+    decltype(j) &a = i; //冗余的&
+
+    auto *b = &i; //int*
+    decltype(p) *c = &p; //int** 编译器不会忽略decltype后面的*号
+    return 0;
+}
+```
+
+## 追踪返回类型
+### 追踪返回类型的引入
+追踪返回类型配合auto与decltype会真正释放C++11中泛型编程的能力。
+
+如果一个函数模板的返回类型依赖于实际的入口参数类型，那么该返回类型在模板实例化之前可能都无法确定。
+```c++
+template<typename T1， typename T2>
+decltype(t1 + t2) sum(T1 &t1, T2 &t2) //编译器推导decltype(t1 + t2)，t1和t2都未声明，编译器只会从左到右读入符号
+{
+    return t1 + t2;
+}
+```
+上面的问题，C++11引入新语法**追踪返回类型**，来声明和定义这样的函数。
+```c++
+template<typename T1， typename T2>
+auto sum(T1 &t1, T2 &t2) -> decltype(t1 + t2)
+{
+    return t1 + t2;
+}
+```
+auto占位符合->return_type是构成追踪返回类型函数的两个基本元素。
+
+### 使用追踪返回类型的函数
+* 追踪类型的一个好处就是模板类型推导，上面的sum例子。
+* 另外一个好处就是简化函数的定义
+```c++
+int (*(*pf())())() //这是面试题
+{
+    return nullptr;
+}
+
+//auto (*)() -> int (*)() 一个返回函数指针的函数(假设为a函数)
+//auto pf1() -> auto (*)() -> int(*)() 一个返回a函数的指针的函数
+
+auto pf1() -> auto (*)() -> int(*)()
+{
+    return nullptr;
+}
+
+int main()
+{
+    cout << is_same<decltype(pf), decltype(pf1)>::value << endl; //1
+    return 0;
+}
+```
+>**PS:说实话那个面试题的什么鬼我都不知道**
+
+* 用在转发函数
+```c++
+template <class T>
+auto Fowrad(T t) -> decltype(foo(t))
+{
+    return foo(t);
+}
+```
+
