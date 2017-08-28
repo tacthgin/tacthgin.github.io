@@ -65,7 +65,7 @@ int main()
 template <class T> struct MyTemplate{};
 int main()
 {
-    MyTemplate<struct {int a;}> t; //无法编译通过，匿名类型的生命不能再模板实参位置
+    MyTemplate<struct {int a;}> t; //无法编译通过，匿名类型的声明不能再模板实参位置
     return 0;
 } 
 ```
