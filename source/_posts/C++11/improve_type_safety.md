@@ -17,14 +17,14 @@ C++定义数值的名字有以下3种方式实现：
 * C++的具名enum类型的名字，以及enum成员的名字都是全局可见。容易出现如下的问题：
 ```c++
 enum Type { General, Light, Medium, Heavy};
-enum Category { General, Pistol, MachineGun, cannon };
+enum Category { General, Pistol, MachineGun, Cannon };
 ```
 >因为General是全局的，所以编译会报错。
 
 * 由于C中枚举被设计为常量数值的别名，所以枚举成员总是可以隐式的转换为整形。很多时候，这是不安全的。
 ```c++
 enum Type { General, Light, Medium, Heavy};
-enum Category { Pistol, MachineGun, cannon };
+enum Category { Pistol, MachineGun, Cannon };
 
 int main()
 {
@@ -45,7 +45,7 @@ int main()
 * 可以指定底层类型，强类型枚举默认的底层类型为int，但可以指定底层类型，在枚举名称后面加上: type，type可以是除wchar_t以外的任何整型。
 ```c++
 enum class Type { General, Light, Medium, Heavy};
-enum class Category { General = 1, Pistol, MachineGun, cannon };
+enum class Category { General = 1, Pistol, MachineGun, Cannon };
 
 int main()
 {
@@ -109,4 +109,80 @@ C++11对原有的枚举类型有做了一些改动。
 enum Type { General, Light, Medium, Heavy };
 Type t1 = General;
 Type t2 = Type::General;
+```
+
+## 堆内存管理：智能指针与垃圾回收
+### 显式内存管理
+由于C/C++允许程序员自由的管理内存，但是一旦使用不当，容易出现以下几个问题：
+* 野指针：指针指向的内存已经被释放，但是这个指针依然被使用。
+* 重复释放：重复释放已经被释放过的内存
+* 内存泄漏：不需要使用的内存单元没有被释放，并且反复的进行此类操作，导致大量内存泄漏
+
+### C++11的智能指针
+#### unque_ptr
+unque_ptr只绑定一份对象的内存，不能与其他unque_ptr共享。
+* 没有拷贝构造函数(拷贝赋值运算符同理)，不允许拷贝智能指针。
+* 有移动构造函数(移动赋值运算符同理)，允许移动智能指针。
+
+```c++
+#include <memory>
+
+using namespace std;
+
+int main()
+{
+    unique_ptr<int> p(new auto(1));
+    unique_ptr<int> p1 = p; //不能通过编译
+    unique_ptr<int> p2 = move(p);
+
+    int i = *p; //运行时错误
+    p2.reset(); //显式释放内存
+    p.reset(); //不会导致运行时错误
+
+    return 0;
+}
+
+```
+#### shared_ptr
+shared_ptr允许多个指针共享一份内存。使用引用计数来控制释放内存的时机。
+```c++
+#include <memory>
+
+using namespace std;
+
+int main()
+{
+    shared_ptr<int> sp(new auto(1));
+    shared_ptr<int> sp1 = sp;
+    cout << sp1.use_count() << endl; //2
+
+    return 0;
+}
+```
+shared_ptr要注意一点就是不能陷入循环引用，不然会引起内存泄漏
+
+#### weak_ptr
+weak_ptr可以接收一个shared_ptr判断指针是否已经被释放过了。
+```c++
+#include <memory>
+
+using namespace std;
+
+int main()
+{
+    shared_ptr<int> sp(new auto(1));
+    sp.reset();
+
+    weak_ptr<int> wp(sp);
+    if (wp.lock()) //Pointer is invalid
+    {
+        cout << "Pointer is not invalid" << endl;
+    }
+    else
+    {
+        cout << "Pointer is invalid" << endl; 
+    }
+
+    return 0;
+}
 ```
