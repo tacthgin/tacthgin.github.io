@@ -110,7 +110,7 @@ template <typename T1, typename T2> class B{};
 template<typename... A> class Test : private B<A...>{};
 Test<X, Y> xy;
 ```
-A...就是一个包扩展,上面的例子中如果我们定义Test<X, Y, Z>就会出现错误。如果想要变长的参数，可以参考下tuple的例子：
+A...就是一个包扩展,上面的例子中如果我们定义Test&lt;X, Y, Z>就会出现错误。如果想要变长的参数，可以参考下tuple的例子：
 ```c++
 template <typename... Elements> class tuple;
 
@@ -122,3 +122,31 @@ class tuple<Head, Tail...> : private tuple<Tail...>
 
 template<> class tuple<> {}; //边界条件
 ```
+Head作为tuple<Head, Tail...>的第一个成员，tuple<Tail...>作为tuple<Head, Tail>的私有基类。当实例化一个tuple&lt;double, int, char, float>类型时候，会引起基类的递归构造，递归在tuple的参数包为0的时候会结束。编译器将从tuple<>构造出tuple&lt;float>，然后tuple&lt;char, float>、tuple&lt;int, char, float>，最后tuple&lt;double, int, char, float>。
+![](template_param.png)
+
+除了变长的模板类，在C++11中，我们还可以声明变长模板的函数。同样的，变长的函数参数也可以声明为函数参数包(function parameter pack)。
+```c++
+template<typename... T> void f(T... args);
+```
+C++11标准要求函数参数包必须唯一，并且是函数的最后一个参数。
+```c++
+template<typename T>
+T f(T first)
+{
+    return first;
+}
+
+template<typename T, typename... Args>
+T f(T first, Args... args)
+{
+    return first + f(args...);
+}
+
+int main()
+{
+    cout << f(12, 3, 2, 3); // 20
+    return 0;
+}
+```
+### 变长模板：进阶
