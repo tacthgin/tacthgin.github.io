@@ -122,7 +122,7 @@ class tuple<Head, Tail...> : private tuple<Tail...>
 
 template<> class tuple<> {}; //边界条件
 ```
-Head作为tuple<Head, Tail...>的第一个成员，tuple<Tail...>作为tuple<Head, Tail>的私有基类。当实例化一个tuple&lt;double, int, char, float>类型时候，会引起基类的递归构造，递归在tuple的参数包为0的时候会结束。编译器将从tuple<>构造出tuple&lt;float>，然后tuple&lt;char, float>、tuple&lt;int, char, float>，最后tuple&lt;double, int, char, float>。
+Head作为tuple&lt;Head, Tail...>的第一个成员，tuple&lt;Tail...>作为tuple&lt;Head, Tail>的私有基类。当实例化一个tuple&lt;double, int, char, float>类型时候，会引起基类的递归构造，递归在tuple的参数包为0的时候会结束。编译器将从tuple<>构造出tuple&lt;float>，然后tuple&lt;char, float>、tuple&lt;int, char, float>，最后tuple&lt;double, int, char, float>。
 ![](template_param.png)
 
 除了变长的模板类，在C++11中，我们还可以声明变长模板的函数。同样的，变长的函数参数也可以声明为函数参数包(function parameter pack)。
@@ -150,3 +150,148 @@ int main()
 }
 ```
 ### 变长模板：进阶
+C++11标准定义了7中参数包可以展开的位置：
+* 表达式
+* 初始化列表
+* 基类描述列表
+* 类成员初始化列表
+* 模板参数列表
+* 通用属性列表
+* lambda函数的捕捉列表
+
+其他一些有趣的包扩展表达式：
+* 声明Arg为参数包，使用Arg&&的包扩展表达式，解包后等价于Arg1&&，...，Argn&&
+* 继承的解包
+```c++
+template <typename... A> class T : privateB<A>...{};
+//相当于 class T<X, Y> : private B<X>, private B<Y>{};
+
+template <typename... A> class T : private B<A...>{}
+//相当于 class T<X, Y> : private B<X, Y>{};
+```
+* 函数参数的解包
+```c++
+template <typename T>
+T pr(T t)
+{
+	cout << t;
+	return t;
+}
+
+template <typename... Args>
+void dumpWrapper(Args... args)
+{
+
+}
+
+template <typename... Args>
+void dump(Args... args)
+{
+    dumpWrapper(pr(args)...); //调用pr(arg1), pr(arg2)
+}
+
+int main()
+{
+    dump("a", "b", "c", "d"); //dcba 
+    return 0;
+}
+```
+* 操作符sizof...,计算变长包的长度
+
+## 原子类型与原子操作
+### 原子操作与C++11原子类型
+原子操作就是多线程程序中最小的且不可并行化的操作。如果对一个共享的资源操作是原子操作，那么多个线程访问该资源，仅有一个线程在对这个资源进行操作。通常情况原子操作都是通过互斥的访问来保证的(互斥锁)。
+在C++11中，通过对并行编程更为良好的抽象，实现同样的功能就简单了很多。
+* 原子类型
+```c++
+#include <iostream>
+#include <atomic>
+#include <thread>
+
+using namespace std;
+
+atomic_llong total { 0 };
+
+void func(int)
+{
+    for (long long i = 0; i < 100000000LL; ++i)
+    {
+        total += i;
+    }
+}
+
+int main()
+{
+    thread t1(func, 0);
+    thread t2(func, 0);
+
+    t1.join();
+    t2.join();
+
+    cout << total << endl; //9999999900000000 如果使用传统的long long类型在vs2015上是5634540629934525
+
+    return 0;
+}
+```
+* &lt;cstdatomic>头文件中的原子类型
+![](atomic_type.png)
+
+* atomic类模板
+```c++
+std::atomic<T> t;
+
+atomic<float> af {1.2f};
+atomic<float> af1 {af}; //无法通过编译
+
+float f = af;
+float f1 = {af};
+```
+* 原子类型能够保持的原子性的原因是编译器能够保证对原子类型的操作都是原子操作，在C++11中，将原子操作定义为atomic模板类的成员函数。
+![](atomic_handle.png)
+atomic-integral-type和integral-type指的是表6-1中所有原子类型的整型，class-type指的是自定义类型。对于大多数原子类型而言，都可以执行读(load)、写(store)、交换(exchange)、比较交换(compare-exchange_weak/compare_exchange_stronge)。
+```c++
+atomic<int> a;
+int b = a; //a.load()
+
+atomic<int> a;
+a = 1; //a.store(1)
+```
+* atomic_flag是无锁的，线程对其访问不需要加锁，不需要使用load、store等成员函数进行读写。通过atomic_flag的成员test_and_set以及clear，可以实现一个自旋锁(spin lock)。
+```c++
+#include <iostream>
+#include <atomic>
+#include <thread>
+#include <windows.h>
+
+using namespace std;
+
+atomic_flag lock = ATOMIC_FLAG_INIT; //设置初始状态false
+
+void f(int n)
+{
+    while (lock.test_and_set(memory_order_acquire)) //尝试获得锁，不断设置为true
+        cout << "Waiting from thread" << n << endl; //自旋
+    cout << "Thread " << n << " strats working" << endl;
+}
+
+void g(int n)
+{
+    cout << "Thread " << n << " is going to start" << endl;
+    lock.clear(); //设置标志位false
+    cout << "Thread " << n << " strats working" << endl;
+}
+
+
+int main()
+{
+    lock.test_and_set(); //设置为true
+    thread t1(f, 1);
+    thread t2(g, 2);
+
+    t1.join();
+    Sleep(1000);
+    t2.join();
+
+    return 0;
+}
+```
