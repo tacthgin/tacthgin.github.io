@@ -38,10 +38,10 @@ post_asset_folder: true
 relative_link: false
 future: true
 highlight:
-  enable: true
-  line_number: true
-  auto_detect: false
-  tab_replace:
+    enable: true
+    line_number: true
+    auto_detect: false
+    tab_replace:
 
 # Category & Tag
 default_category: uncategorized
@@ -63,12 +63,12 @@ pagination_dir: page
 # Extensions
 ## Plugins: https://hexo.io/plugins/
 ## Themes: https://hexo.io/themes/
-theme: maupassant
+theme: melody
 stylus:
-  compress: true
+    compress: true
 
 # Deployment
 ## Docs: https://hexo.io/docs/deployment.html
 deploy:
-  type: git
-  repo: git@github.com:tacthgin/tacthgin.github.io
+    type: git
+    repo: git@github.com:tacthgin/tacthgin.github.io
