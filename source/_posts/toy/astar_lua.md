@@ -3,7 +3,7 @@ title: Lua的Astar实现
 date: 2017-9-30 9:47:00
 tags: 
     Astar
-category: toy
+category: Toy
 ---
 
 ## 用Lua实现了一个简单的方块A\*寻路。
